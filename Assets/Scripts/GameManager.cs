@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,15 +22,50 @@ public class GameManager : MonoBehaviour
 	}
 	#endregion
 
+	[SerializeField]
+	private int playerCount;
+	[SerializeField]
+	private int length;
+	[SerializeField]
+	private List<InputDirection> sequence;
+	[SerializeField]
+	private List<int> currentPlayerIndecies;
+
+	[SerializeField]
+	private InputDirection nextDirection;
+
 	// Start is called before the first frame update
 	void Start()
     {
-        
-    }
+		for(int i = 0; i < length; i++) {
+			int randomIndex = UnityEngine.Random.Range(0, Enum.GetNames(typeof(InputDirection)).Length);
+			InputDirection randomInputKey = (InputDirection)randomIndex;
+			sequence.Add(randomInputKey);
+        }
+
+		currentPlayerIndecies = new List<int>();
+		for(int i = 0; i < playerCount; i++) {
+			currentPlayerIndecies.Add(0);
+		}
+	}
 
     // Update is called once per frame
     void Update()
     {
-        
+		nextDirection = sequence[currentPlayerIndecies[0]];
+
+	}
+
+	public InputDirection GetNextKeyForPlayer(int playerNum) {
+		int index = currentPlayerIndecies[playerNum];
+		return sequence[index];
+    }
+
+	public void CheckInput(int playerNum, InputDirection inputDirection) {
+		InputDirection nextDirection = GetNextKeyForPlayer(playerNum);
+		bool isInputCorrect = nextDirection == inputDirection;
+		if(isInputCorrect) {
+			currentPlayerIndecies[playerNum]++;
+		}
     }
 }
