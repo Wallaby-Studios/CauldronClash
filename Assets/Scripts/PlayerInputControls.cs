@@ -61,8 +61,8 @@ public class PlayerInputControls : MonoBehaviour
     }
 
     private void FixedUpdate() {
+        // If penalized increment the timer and check if the penalized time is over
         if(isPenalized) {
-            Debug.Log("Penalized!");
             penaltyTimer -= Time.deltaTime;
             if(penaltyTimer <= 0.0f) {
                 Unpenalize();
@@ -70,12 +70,18 @@ public class PlayerInputControls : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Dis-allow the player to send inputs
+    /// </summary>
     public void Penalize() {
         penaltyTimer = penaltyTimerMax;
         isPenalized = true;
         playerContols.Disable();
     }
 
+    /// <summary>
+    /// Re-allow the player to send inputs
+    /// </summary>
     private void Unpenalize() {
         isPenalized = false;
         playerContols.Enable();

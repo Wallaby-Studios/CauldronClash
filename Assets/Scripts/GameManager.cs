@@ -56,6 +56,10 @@ public class GameManager : MonoBehaviour
 
 	}
 
+	/// <summary>
+	/// Changes the game state of the game, similar to menus
+	/// </summary>
+	/// <param name="newGameState">The new state of the game</param>
 	public void ChangeGameState(GameState newGameState) {
 		switch(newGameState) {
 			case GameState.MainMenu:
@@ -71,6 +75,11 @@ public class GameManager : MonoBehaviour
 		UIManager.instance.UpdateUI(newGameState);
     }
 
+	/// <summary>
+	/// Checks provided input for the specified player
+	/// </summary>
+	/// <param name="playerIndex">The int index corresponding to the player</param>
+	/// <param name="inputDirection">The input pressed by the player</param>
 	public void CheckInput(int playerIndex, InputDirection inputDirection) {
 		if(currentGameState == GameState.Game) {
 			InputDirection nextDirection = GetNextKeyForPlayer(playerIndex);
@@ -79,6 +88,11 @@ public class GameManager : MonoBehaviour
 		}
     }
 
+	/// <summary>
+	/// Checks provided input for the specified player
+	/// </summary>
+	/// <param name="playerIndex">The int index corresponding to the player</param>
+	/// <param name="isInputCorrect">A Boolean whether the input sent is the next required input direction</param>
 	public void CheckInput(int playerIndex, bool isInputCorrect) {
 		if(isInputCorrect) {
 			// Increment the player to the next input in the sequence 
@@ -101,11 +115,19 @@ public class GameManager : MonoBehaviour
         }
 	}
 
+	/// <summary>
+	/// Gets the next required input for the specified player
+	/// </summary>
+	/// <param name="playerIndex">The int index corresponding to the player</param>
+	/// <returns>The next input needed by the player</returns>
 	private InputDirection GetNextKeyForPlayer(int playerNum) {
 		int index = currentPlayerIndecies[playerNum];
 		return sequence[index];
 	}
 
+	/// <summary>
+	/// Set up initial values needed for each round
+	/// </summary>
 	private void SetupGame() {
 		// Generate input sequence
 		sequence = new List<InputDirection>();
@@ -119,6 +141,7 @@ public class GameManager : MonoBehaviour
 		// Get all "Players" in the scene - includes Computers
 		players = GameObject.FindGameObjectsWithTag("Player");
 
+		// Check if enough players are created, if not, fill in with computers
         int numberOfPlayers = Mathf.Max(minPlayerCount, players.Length);
         currentPlayerIndecies = new List<int>();
 		for(int i = 0; i < numberOfPlayers; i++) {
@@ -126,6 +149,7 @@ public class GameManager : MonoBehaviour
             if(i >= players.Length) {
                 GameObject computer = Instantiate(computerPrefab);
 				computer.name = "Computer" + i;
+				computer.GetComponent<ComputerInput>().Index = i;
             }
             currentPlayerIndecies.Add(0);
 		}
