@@ -28,11 +28,11 @@ public class ComputerInput : MonoBehaviour
                 break;
             case ComputerDifficulty.Medium:
                 inputRate = 1.5f;
-                wrongInputChance = 0.3f;
+                wrongInputChance = 0.2f;
                 break;
             case ComputerDifficulty.Hard:
                 inputRate = 1.0f;
-                wrongInputChance = 0.2f;
+                wrongInputChance = 0.0f;
                 break;
         }
 
@@ -46,12 +46,14 @@ public class ComputerInput : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        currentTimer -= Time.deltaTime;
-        if(currentTimer <= 0.0f) {
-            float random = Random.Range(0.0f, 1.0f);
-            bool isInputCorrect = random > wrongInputChance;
-            SubmitInput(isInputCorrect);
-            currentTimer = inputRate;
+        if(GameManager.instance.CurrentGameState == GameState.Game) {
+            currentTimer -= Time.deltaTime;
+            if(currentTimer <= 0.0f) {
+                float random = Random.Range(0.0f, 1.0f);
+                bool isInputCorrect = random > wrongInputChance;
+                SubmitInput(isInputCorrect);
+                currentTimer = inputRate;
+            }
         }
     }
 

@@ -3,6 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum GameState {
+	MainMenu,
+	Game,
+	GameEnd
+}
+
 public class GameManager : MonoBehaviour
 {
 	#region Singleton Code
@@ -22,28 +28,26 @@ public class GameManager : MonoBehaviour
 	}
 	#endregion
 
+	private GameObject[] players;
+	private GameState currentGameState;
+
 	[SerializeField]
-	private int playerCount;
+	private GameObject computerPrefab;
 	[SerializeField]
-	private int length;
+	private int minPlayerCount, sequenceLength;
 	[SerializeField]
 	private List<InputDirection> sequence;
 	[SerializeField]
 	private List<int> currentPlayerIndecies;
 
+	public GameObject[] Players { get { return players; } }
+	public GameState CurrentGameState { get { return currentGameState; } }
+	public List<InputDirection> Sequence { get { return sequence; } }
+
 	// Start is called before the first frame update
 	void Start()
     {
-		for(int i = 0; i < length; i++) {
-			int randomIndex = UnityEngine.Random.Range(0, Enum.GetNames(typeof(InputDirection)).Length);
-			InputDirection randomInputKey = (InputDirection)randomIndex;
-			sequence.Add(randomInputKey);
-        }
-
-		currentPlayerIndecies = new List<int>();
-		for(int i = 0; i < playerCount; i++) {
-			currentPlayerIndecies.Add(0);
-		}
+		ChangeGameState(GameState.MainMenu);
 	}
 
     // Update is called once per frame
@@ -52,23 +56,81 @@ public class GameManager : MonoBehaviour
 
 	}
 
-	public InputDirection GetNextKeyForPlayer(int playerNum) {
+	public void ChangeGameState(GameState newGameState) {
+		switch(newGameState) {
+			case GameState.MainMenu:
+				break;
+			case GameState.Game:
+				SetupGame();
+				break;
+			case GameState.GameEnd:
+				break;
+		}
+
+		currentGameState = newGameState;
+		UIManager.instance.UpdateUI(newGameState);
+    }
+
+	public void CheckInput(int playerIndex, InputDirection inputDirection) {
+		if(currentGameState == GameState.Game) {
+			InputDirection nextDirection = GetNextKeyForPlayer(playerIndex);
+			bool isInputCorrect = nextDirection == inputDirection;
+			CheckInput(playerIndex, isInputCorrect);
+		}
+    }
+
+	public void CheckInput(int playerIndex, bool isInputCorrect) {
+		if(isInputCorrect) {
+			// Increment the player to the next input in the sequence 
+			currentPlayerIndecies[playerIndex]++;
+
+			if(currentPlayerIndecies[playerIndex] >= sequence.Count) {
+				// End the round if a player has input the last of the sequence
+				Debug.Log(string.Format("Player {0} Wins!", playerIndex));
+				ChangeGameState(GameState.GameEnd);
+            } else {
+				// Otherwise, update its arrow
+				UIManager.instance.UpdateArrow(playerIndex);
+            }
+		} else {
+			// Penalize the player for an incorrect input
+			PlayerInputControls playerInputControls = players[playerIndex].GetComponent<PlayerInputControls>();
+			if(playerInputControls != null) {
+				playerInputControls.Penalize();
+			}
+        }
+	}
+
+	private InputDirection GetNextKeyForPlayer(int playerNum) {
 		int index = currentPlayerIndecies[playerNum];
 		return sequence[index];
-    }
+	}
 
-	public void CheckInput(int playerNum, InputDirection inputDirection) {
-		InputDirection nextDirection = GetNextKeyForPlayer(playerNum);
-		bool isInputCorrect = nextDirection == inputDirection;
-		CheckInput(playerNum, isInputCorrect);
-    }
+	private void SetupGame() {
+		// Generate input sequence
+		sequence = new List<InputDirection>();
+		for(int i = 0; i < sequenceLength; i++) {
+			int randomIndex = UnityEngine.Random.Range(0, Enum.GetNames(typeof(InputDirection)).Length);
+			InputDirection randomInputKey = (InputDirection)randomIndex;
+			sequence.Add(randomInputKey);
+		}
+		UIManager.instance.DisplaySequence();
 
-	public void CheckInput(int playerNum, bool isInputCorrect) {
-		if(isInputCorrect) {
-			currentPlayerIndecies[playerNum]++;
-			Debug.Log(string.Format("Player {0} is on input {1} out of {2}", playerNum, currentPlayerIndecies[playerNum], sequence.Count));
-		} else {
-			// Timeout input for n seconds
-        }
+		// Get all "Players" in the scene - includes Computers
+		players = GameObject.FindGameObjectsWithTag("Player");
+
+        int numberOfPlayers = Mathf.Max(minPlayerCount, players.Length);
+        currentPlayerIndecies = new List<int>();
+		for(int i = 0; i < numberOfPlayers; i++) {
+			// Create a Computer until the minimum players are hit
+            if(i >= players.Length) {
+                GameObject computer = Instantiate(computerPrefab);
+				computer.name = "Computer" + i;
+            }
+            currentPlayerIndecies.Add(0);
+		}
+
+		// Re - Get all "Players" in the scene - includes Computers
+		players = GameObject.FindGameObjectsWithTag("Player");
 	}
 }

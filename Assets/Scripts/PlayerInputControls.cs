@@ -14,6 +14,9 @@ public class PlayerInputControls : MonoBehaviour
 {
     public PlayerInputActions playerContols;
 
+    private float penaltyTimerMax, penaltyTimer;
+    private bool isPenalized;
+
     private InputAction inputUp;
     private InputAction inputDown;
     private InputAction inputLeft;
@@ -52,13 +55,30 @@ public class PlayerInputControls : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        penaltyTimerMax = 1.0f;
+        penaltyTimer = penaltyTimerMax;
+        isPenalized = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    private void FixedUpdate() {
+        if(isPenalized) {
+            Debug.Log("Penalized!");
+            penaltyTimer -= Time.deltaTime;
+            if(penaltyTimer <= 0.0f) {
+                Unpenalize();
+            }
+        }
+    }
 
+    public void Penalize() {
+        penaltyTimer = penaltyTimerMax;
+        isPenalized = true;
+        playerContols.Disable();
+    }
+
+    private void Unpenalize() {
+        isPenalized = false;
+        playerContols.Enable();
     }
 
     private void UpInputPerformed(InputAction.CallbackContext context) {
