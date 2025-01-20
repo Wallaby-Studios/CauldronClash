@@ -31,9 +31,6 @@ public class GameManager : MonoBehaviour
 	[SerializeField]
 	private List<int> currentPlayerIndecies;
 
-	[SerializeField]
-	private InputDirection nextDirection;
-
 	// Start is called before the first frame update
 	void Start()
     {
@@ -52,7 +49,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		nextDirection = sequence[currentPlayerIndecies[0]];
 
 	}
 
@@ -71,6 +67,8 @@ public class GameManager : MonoBehaviour
 		if(isInputCorrect) {
 			currentPlayerIndecies[playerNum]++;
 			Debug.Log(string.Format("Player {0} is on input {1} out of {2}", playerNum, currentPlayerIndecies[playerNum], sequence.Count));
-		}
+		} else {
+			// Timeout input for n seconds
+        }
 	}
 }
