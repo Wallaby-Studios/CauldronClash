@@ -64,8 +64,13 @@ public class GameManager : MonoBehaviour
 	public void CheckInput(int playerNum, InputDirection inputDirection) {
 		InputDirection nextDirection = GetNextKeyForPlayer(playerNum);
 		bool isInputCorrect = nextDirection == inputDirection;
+		CheckInput(playerNum, isInputCorrect);
+    }
+
+	public void CheckInput(int playerNum, bool isInputCorrect) {
 		if(isInputCorrect) {
 			currentPlayerIndecies[playerNum]++;
+			Debug.Log(string.Format("Player {0} is on input {1} out of {2}", playerNum, currentPlayerIndecies[playerNum], sequence.Count));
 		}
-    }
+	}
 }

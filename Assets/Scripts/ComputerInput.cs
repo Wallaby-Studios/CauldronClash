@@ -56,7 +56,6 @@ public class ComputerInput : MonoBehaviour
     }
 
     private void SubmitInput(bool isInputCorrect) {
-        string inputCorrectness = isInputCorrect ? "Right" : "Wrong";
-        Debug.Log(string.Format("Computer Input: {0}", inputCorrectness));
+        GameManager.instance.CheckInput(1, isInputCorrect);
     }
 }
