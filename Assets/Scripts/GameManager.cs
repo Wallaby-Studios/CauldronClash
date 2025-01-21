@@ -156,7 +156,6 @@ public class GameManager : MonoBehaviour {
 
         // Check if enough players are created, if not, fill in with CPU
         int numberOfPlayers = Mathf.Max(minPlayerCount, currentPlayerCount);
-        currentPlayerIndecies = new List<int>();
         for(int i = 0; i < numberOfPlayers; i++) {
             // Create a CPU until the minimum players are hit
             if(i >= currentPlayerCount) {
@@ -165,7 +164,6 @@ public class GameManager : MonoBehaviour {
                 computer.name = "CPU" + i;
                 computer.GetComponent<ComputerInput>().Index = i;
             }
-            currentPlayerIndecies.Add(0);
         }
         // Update Player Names Text UI
         UIManager.instance.UpdatePlayersList();
@@ -203,6 +201,12 @@ public class GameManager : MonoBehaviour {
             sequence.Add(randomInputKey);
         }
         UIManager.instance.DisplaySequence();
+
+        // Create a "progress" index for each player
+        currentPlayerIndecies = new List<int>();
+        for(int i = 0; i < playersParent.transform.childCount; i++) {
+            currentPlayerIndecies.Add(0);
+        }
     }
 
     /// <summary>
