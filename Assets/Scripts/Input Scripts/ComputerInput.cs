@@ -8,23 +8,18 @@ public enum ComputerDifficulty {
     Hard
 }
 
-public class ComputerInput : MonoBehaviour
-{
+public class ComputerInput : EntityInput {
     [SerializeField]
     private ComputerDifficulty difficulty;
-
-    private int index;
 
     private float inputRate;
     private float wrongInputChance;
 
     private float currentTimer;
 
-    public int Index { set { index = value; } }
-
     // Start is called before the first frame update
-    void Start()
-    {
+    protected override void Start() {
+        base.Start();
         switch(difficulty) {
             case ComputerDifficulty.Easy:
                 inputRate = 2.0f;
@@ -43,13 +38,8 @@ public class ComputerInput : MonoBehaviour
         currentTimer = inputRate;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    private void FixedUpdate() {
+    protected override void FixedUpdate() {
+        base.FixedUpdate();
         if(GameManager.instance.CurrentGameState == GameState.Game) {
             currentTimer -= Time.deltaTime;
             // Simulate input from the computer 
@@ -57,6 +47,9 @@ public class ComputerInput : MonoBehaviour
                 // Randomize whether the input is correct (based on difficulty)
                 float random = Random.Range(0.0f, 1.0f);
                 bool isInputCorrect = random > wrongInputChance;
+                if(!isInputCorrect) {
+                    DisableInput();
+                }
                 SubmitInput(isInputCorrect);
                 currentTimer = inputRate;
             }

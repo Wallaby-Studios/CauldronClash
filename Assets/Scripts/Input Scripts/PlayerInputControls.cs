@@ -10,12 +10,8 @@ public enum InputDirection {
     Right
 }
 
-public class PlayerInputControls : MonoBehaviour
-{
+public class PlayerInputControls : EntityInput {
     public PlayerInputActions playerContols;
-
-    private float penaltyTimerMax, penaltyTimer;
-    private bool isPenalized;
 
     private InputAction inputUp;
     private InputAction inputDown;
@@ -53,37 +49,27 @@ public class PlayerInputControls : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
-    {
-        penaltyTimerMax = 1.0f;
-        penaltyTimer = penaltyTimerMax;
-        isPenalized = false;
+    protected override void Start() {
+        base.Start();
     }
 
-    private void FixedUpdate() {
-        // If penalized increment the timer and check if the penalized time is over
-        if(isPenalized) {
-            penaltyTimer -= Time.deltaTime;
-            if(penaltyTimer <= 0.0f) {
-                Unpenalize();
-            }
-        }
+    protected override void FixedUpdate() {
+        base.FixedUpdate();
     }
 
     /// <summary>
     /// Dis-allow the player to send inputs
     /// </summary>
-    public void Penalize() {
-        penaltyTimer = penaltyTimerMax;
-        isPenalized = true;
+    public override void DisableInput() {
+        base.DisableInput();
         playerContols.Disable();
     }
 
     /// <summary>
     /// Re-allow the player to send inputs
     /// </summary>
-    private void Unpenalize() {
-        isPenalized = false;
+    public override void EnableInput() {
+        base.EnableInput();
         playerContols.Enable();
     }
 
