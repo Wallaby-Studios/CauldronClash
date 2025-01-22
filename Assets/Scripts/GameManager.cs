@@ -133,8 +133,7 @@ public class GameManager : MonoBehaviour {
 
             if(currentPlayerIndecies[playerIndex] >= sequence.Count) {
                 // End the round if a player has input the last of the sequence
-                Debug.Log(string.Format("Player {0} Wins!", playerIndex));
-                ChangeGameState(GameState.GameEnd);
+                GameWon(playerIndex);
             } else {
                 // Otherwise, update its arrow
                 UIManager.instance.AdvanceArrow(playerIndex);
@@ -213,6 +212,16 @@ public class GameManager : MonoBehaviour {
     private InputDirection GetNextKeyForPlayer(int playerNum) {
         int index = currentPlayerIndecies[playerNum];
         return sequence[index];
+    }
+
+    /// <summary>
+    /// Move the game to the game end state
+    /// </summary>
+    /// <param name="winningPlayerIndex">The index of the winning player</param>
+    private void GameWon(int winningPlayerIndex) {
+        //Debug.Log(string.Format("Player {0} Wins!", winningPlayerIndex + 1));
+        UIManager.instance.UpdateGameEndText(winningPlayerIndex);
+        ChangeGameState(GameState.GameEnd);
     }
     #endregion Private Methods
 }

@@ -67,6 +67,10 @@ public class ComputerInput : EntityInput {
         GameManager.instance.CheckInput(index, isInputCorrect);
     }
 
+    /// <summary>
+    /// Move the CPU's difficulty to the previous difficulty
+    /// </summary>
+    /// <returns>The previous difficulty (including looping)</returns>
     public ComputerDifficulty PreviousDifficulty() {
         // Get the index of the current difficulty and decrement it
         int currentEnumIndex = (int)difficulty;
@@ -80,6 +84,10 @@ public class ComputerInput : EntityInput {
         return difficulty;
     }
 
+    /// <summary>
+    /// Move the CPU's difficulty to the next difficulty
+    /// </summary>
+    /// <returns>The next difficulty (including looping)</returns>
     public ComputerDifficulty NextDifficulty() {
         // Get the index of the current difficulty and increment it
         int currentEnumIndex = (int)difficulty;

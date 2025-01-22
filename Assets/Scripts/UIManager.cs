@@ -26,7 +26,7 @@ public class UIManager : MonoBehaviour {
     [SerializeField]    // Buttons
     private Button mainMenuToPlayerJoinButton, playerJoinToGameButton, fillWithCPUsButton, gameEndToMainMenuButton;
     [SerializeField]    // Text
-    private TMP_Text sequenceText;
+    private TMP_Text sequenceText, gameEndTitle;
     [SerializeField]
     private GameObject playerListParent;
     [SerializeField]
@@ -48,6 +48,7 @@ public class UIManager : MonoBehaviour {
 
     }
 
+    #region Public Methods
     /// <summary>
     /// Update the UI based on a new game state
     /// </summary>
@@ -73,16 +74,6 @@ public class UIManager : MonoBehaviour {
                 gameEndUIParent.SetActive(true);
                 break;
         }
-    }
-
-    /// <summary>
-    /// Set up button onClicks
-    /// </summary>
-    private void SetupButtons() {
-        mainMenuToPlayerJoinButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.PlayerJoin));
-        playerJoinToGameButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.Game));
-        fillWithCPUsButton.onClick.AddListener(GameManager.instance.FillPlayersWithCPUs);
-        gameEndToMainMenuButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.MainMenu));
     }
 
     /// <summary>
@@ -140,11 +131,17 @@ public class UIManager : MonoBehaviour {
         playerArrowsParent.transform.GetChild(arrowIndex).GetComponent<Image>().color = enabled ? Color.white : Color.red;
     }
 
+    /// <summary>
+    /// Create a UI element when a player joins (player or CPU)
+    /// </summary>
+    /// <param name="index">The int index of the player joined</param>
+    /// <param name="inputComponent">The component of the CPU's input. Possibly null if a player has joined</param>
     public void DisplayJoinedPlayer(int index, ComputerInput inputComponent) {
         float yDiff = -80.0f;
         Vector2 position = new Vector2(0.0f, index * yDiff);
 
         if(inputComponent != null) {
+            // If inputComponent exists, a CPU has been added to the game
             GameObject cPUPlayerListItem = Instantiate(
                 cPUPlayerListPrefab, 
                 Vector2.zero, 
@@ -155,6 +152,7 @@ public class UIManager : MonoBehaviour {
                 string.Format("CPU {0}", index + 1),
                 inputComponent);
         } else {
+            // If inputComponent is null, a non-CPU player has joined
             GameObject playerTextObject = Instantiate(
                 playerListPrefab, 
                 Vector2.zero,
@@ -172,5 +170,24 @@ public class UIManager : MonoBehaviour {
     /// </summary>
     public void UpdatePlayerJoinToGameButton() {
         playerJoinToGameButton.interactable = GameManager.instance.GetPlayerCount() >= GameManager.instance.MinPlayerCount;
+    }
+
+    /// <summary>
+    /// Update the Game End Title Text
+    /// </summary>
+    /// <param name="winningPlayerIndex">The index of the winning player</param>
+    public void UpdateGameEndText(int winningPlayerIndex) {
+        gameEndTitle.text = string.Format("Player {0} Wins!", winningPlayerIndex + 1);
+    }
+    #endregion Public Methods
+
+    /// <summary>
+    /// Set up button onClicks
+    /// </summary>
+    private void SetupButtons() {
+        mainMenuToPlayerJoinButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.PlayerJoin));
+        playerJoinToGameButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.Game));
+        fillWithCPUsButton.onClick.AddListener(GameManager.instance.FillPlayersWithCPUs);
+        gameEndToMainMenuButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.MainMenu));
     }
 }

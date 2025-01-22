@@ -32,12 +32,18 @@ public class EntityInput : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Disable the input of the entity
+    /// </summary>
     public virtual void DisableInput() {
         inputDisabledTimer = inputDisabledTimerMax;
         isInputEnabled = false;
         UIManager.instance.UpdateArrow(index, false);
     }
 
+    /// <summary>
+    /// Enable the input of the entity
+    /// </summary>
     public virtual void EnableInput() {
         isInputEnabled = true;
         UIManager.instance.UpdateArrow(index, true);

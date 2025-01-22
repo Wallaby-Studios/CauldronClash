@@ -28,16 +28,27 @@ public class CPUPlayerUI : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Set the values of the the CPU Player UI
+    /// </summary>
+    /// <param name="name">The name of the CPU player</param>
+    /// <param name="computerInput">The component of the CPU gameObject</param>
     public void SetupValues(string name, ComputerInput computerInput) {
         cpuNameText.text = name;
         inputObject = computerInput;
     }
 
+    /// <summary>
+    /// Decrement the CPU's difficulty and update text
+    /// </summary>
     private void PreviousDifficultyText() {
         ComputerDifficulty newDifficulty = inputObject.PreviousDifficulty();
         difficultyText.text = newDifficulty.ToString();
     }
 
+    /// <summary>
+    /// Increment the CPU's difficulty and update text
+    /// </summary>
     private void NextDifficultyText() {
         ComputerDifficulty newDifficulty = inputObject.NextDifficulty();
         difficultyText.text = newDifficulty.ToString();
