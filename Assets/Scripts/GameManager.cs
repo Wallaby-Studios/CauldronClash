@@ -163,12 +163,10 @@ public class GameManager : MonoBehaviour {
                 GameObject computer = Instantiate(computerPrefab, playersParent.transform);
                 computer.name = "CPU" + i;
                 computer.GetComponent<ComputerInput>().Index = i;
+                // Update UI
+                UIManager.instance.DisplayJoinedPlayer(i, computer.GetComponent<ComputerInput>());
             }
         }
-        // Update Player Names Text UI
-        UIManager.instance.UpdatePlayersList();
-        // Check the Player Join to Game Button 
-        UIManager.instance.UpdatePlayerJoinToGameButton();
     }
     #endregion Public Methods
 
@@ -183,10 +181,8 @@ public class GameManager : MonoBehaviour {
         playerInput.GetComponent<PlayerInputControls>().Index = GetPlayerCount();
         // Move the player GameObject as a child of the players parent GameObject
         playerInput.gameObject.transform.SetParent(playersParent.transform);
-        // Update Player Names Text UI
-        UIManager.instance.UpdatePlayersList();
-        // Check the Player Join to Game Button 
-        UIManager.instance.UpdatePlayerJoinToGameButton();
+        // Update UI
+        UIManager.instance.DisplayJoinedPlayer(playersParent.transform.childCount - 1, null);
     }
 
     /// <summary>

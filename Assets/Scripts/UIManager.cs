@@ -21,14 +21,18 @@ public class UIManager : MonoBehaviour {
     }
     #endregion
 
-    [SerializeField]
+    [SerializeField]    // Menu UI Parents
     private GameObject mainMenuUIParent, playerJoinUIParent, gameUIParent, gameEndUIParent;
-    [SerializeField]
+    [SerializeField]    // Buttons
     private Button mainMenuToPlayerJoinButton, playerJoinToGameButton, fillWithCPUsButton, gameEndToMainMenuButton;
+    [SerializeField]    // Text
+    private TMP_Text sequenceText;
     [SerializeField]
-    private TMP_Text playerListText, sequenceText;
+    private GameObject playerListParent;
     [SerializeField]
     private GameObject arrowPrefab, playerArrowsParent;
+    [SerializeField]    // Prefabs
+    private GameObject playerListPrefab, cPUPlayerListPrefab;
 
     // Start is called before the first frame update
     void Start() {
@@ -57,7 +61,6 @@ public class UIManager : MonoBehaviour {
             case GameState.PlayerJoin:
                 mainMenuUIParent.SetActive(false);
                 playerJoinUIParent.SetActive(true);
-                UpdatePlayersList();
                 UpdatePlayerJoinToGameButton();
                 break;
             case GameState.Game:
@@ -137,35 +140,31 @@ public class UIManager : MonoBehaviour {
         playerArrowsParent.transform.GetChild(arrowIndex).GetComponent<Image>().color = enabled ? Color.white : Color.red;
     }
 
-    /// <summary>
-    /// Update the player list Text UI
-    /// </summary>
-    public void UpdatePlayersList() {
-        int playerCount = GameManager.instance.GetPlayerCount();
-        // If there is at least one player, display it first
-        playerListText.text = playerCount > 0 ? DisplayPlayerName(GameManager.instance.GetPlayerByIndex(0).name, 0) : "";
+    public void DisplayJoinedPlayer(int index, ComputerInput inputComponent) {
+        float yDiff = -80.0f;
+        Vector2 position = new Vector2(0.0f, index * yDiff);
 
-        // Display all other players with 2 line breaks
-        for(int i = 1; i < playerCount; i++) {
-            string playerName = DisplayPlayerName(GameManager.instance.GetPlayerByIndex(i).name, i);
-            playerListText.text += string.Format("\n\n{0}", playerName);
-        }
-    }
-
-    /// <summary>
-    /// Properly display a player or CPU's name in the list of players
-    /// </summary>
-    /// <param name="objectName">The string name of the player object</param>
-    /// <param name="index">The int index of the object in the player list</param>
-    /// <returns></returns>
-    private string DisplayPlayerName(string objectName, int index) {
-        if(objectName.Contains("Player")) {
-            return string.Format("Player {0}", index + 1);
-        } else if(objectName.Contains("CPU")) {
-            return string.Format("CPU {0}", index + 1);
+        if(inputComponent != null) {
+            GameObject cPUPlayerListItem = Instantiate(
+                cPUPlayerListPrefab, 
+                Vector2.zero, 
+                Quaternion.identity, 
+                playerListParent.transform);
+            cPUPlayerListItem.transform.localPosition = position;
+            cPUPlayerListItem.GetComponent<CPUPlayerUI>().SetupValues(
+                string.Format("CPU {0}", index + 1),
+                inputComponent);
+        } else {
+            GameObject playerTextObject = Instantiate(
+                playerListPrefab, 
+                Vector2.zero,
+                Quaternion.identity, 
+                playerListParent.transform);
+            playerTextObject.transform.localPosition = position;
+            playerTextObject.GetComponent<TMP_Text>().text = string.Format("Player {0}", index + 1);
         }
 
-        return string.Format("Object {0}", index + 1);
+        UpdatePlayerJoinToGameButton();
     }
 
     /// <summary>
