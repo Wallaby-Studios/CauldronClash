@@ -142,14 +142,14 @@ public class GameManager : MonoBehaviour {
                 GameWon(playerIndex);
             } else {
                 // Otherwise, update its arrow
-                UIManager.instance.AdvanceArrow(playerIndex);
+                UIManager.instance.AdvanceSequenceIndicator(playerIndex);
             }
             // TODO: Throw in good ingredient... YUM
         } else {
             // If the input is incorrect, disable the player from inputting further
             PlayerInputControls playerInputControls = playersParent.transform.GetChild(playerIndex).GetComponent<PlayerInputControls>();
             if(playerInputControls != null) {
-                playerInputControls.DisableInput();
+                ResetProgress(playerIndex);
             }
             // TODO: Throw in onion... STINKY
         }
@@ -159,23 +159,30 @@ public class GameManager : MonoBehaviour {
     /// Add a CPU to the game
     /// </summary>
     public void AddCPUInput() {
-        int newIndex = playersParent.transform.childCount;
+        int childCount = playersParent.transform.childCount;
 
-        // Create a CPU gameObject as a child of the players gameObject, name it "CPU#", and set its player index
-        GameObject computer = Instantiate(computerPrefab, playersParent.transform);
-        computer.name = "CPU" + newIndex;
-        computer.GetComponent<ComputerInput>().Index = newIndex;
-        // Update UI
-        UIManager.instance.DisplayJoinedPlayer(newIndex, computer.GetComponent<ComputerInput>());
-    }
-    #endregion Public Methods
+        if(childCount < GetComponent<PlayerInputManager>().maxPlayerCount) {
+			// Create a CPU gameObject as a child of the players gameObject, name it "CPU#", and set its player index
+			GameObject computer = Instantiate(computerPrefab, playersParent.transform);
+			computer.name = "CPU" + childCount;
+			computer.GetComponent<ComputerInput>().Index = childCount;
+			// Update UI
+			UIManager.instance.DisplayJoinedPlayer(childCount, computer.GetComponent<ComputerInput>());
+		}
+	}
 
-    #region Private Methods
-    /// <summary>
-    /// A method called when a player joins via the PlayerInputManager
-    /// </summary>
-    /// <param name="playerInput">The PlayerInput script of the new player</param>
-    private void PlayerInput_onPlayerJoined(PlayerInput playerInput) {
+	public void ResetProgress(int playerIndex) {
+		currentPlayerIndecies[playerIndex] = 0;
+        UIManager.instance.ResetArrow(playerIndex);
+	}
+	#endregion Public Methods
+
+	#region Private Methods
+	/// <summary>
+	/// A method called when a player joins via the PlayerInputManager
+	/// </summary>
+	/// <param name="playerInput">The PlayerInput script of the new player</param>
+	private void PlayerInput_onPlayerJoined(PlayerInput playerInput) {
         // Set the player's name and index
         playerInput.gameObject.name = string.Format("Player{0}", playersParent.transform.childCount);
         playerInput.GetComponent<PlayerInputControls>().Index = GetPlayerCount();
@@ -189,9 +196,11 @@ public class GameManager : MonoBehaviour {
     /// Set up initial values needed for each round
     /// </summary>
     private void SetupGame() {
-        // Generate input sequence
+        // Generate an initial input sequence and display it to both players
         sequence = GenerateSequence();
-        UIManager.instance.DisplaySequence();
+        for(int i = 0; i < playersParent.transform.childCount; i++) {
+			UIManager.instance.DisplaySequence(i);
+		}
 
         // Create a "progress" index for each player
         currentPlayerIndecies = new List<int>();

@@ -51,7 +51,7 @@ public class ComputerInput : EntityInput {
                 float random = UnityEngine.Random.Range(0.0f, 1.0f);
                 bool isInputCorrect = random > wrongInputChance;
                 if(!isInputCorrect) {
-                    DisableInput();
+                    GameManager.instance.ResetProgress(index);
                 }
                 SubmitInput(isInputCorrect);
                 currentTimer = inputRate;

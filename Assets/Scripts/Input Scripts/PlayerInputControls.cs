@@ -57,22 +57,6 @@ public class PlayerInputControls : EntityInput {
         base.FixedUpdate();
     }
 
-    /// <summary>
-    /// Dis-allow the player to send inputs
-    /// </summary>
-    public override void DisableInput() {
-        base.DisableInput();
-        playerContols.Disable();
-    }
-
-    /// <summary>
-    /// Re-allow the player to send inputs
-    /// </summary>
-    public override void EnableInput() {
-        base.EnableInput();
-        playerContols.Enable();
-    }
-
     private void UpInputPerformed(InputAction.CallbackContext context) {
         GameManager.instance.CheckInput(index, InputDirection.Up);
     }
