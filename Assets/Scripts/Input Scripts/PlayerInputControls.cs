@@ -74,18 +74,18 @@ public class PlayerInputControls : EntityInput {
     }
 
     private void UpInputPerformed(InputAction.CallbackContext context) {
-        GameManager.instance.CheckInput(0, InputDirection.Up);
+        GameManager.instance.CheckInput(index, InputDirection.Up);
     }
 
     private void DownInputPerformed(InputAction.CallbackContext context) {
-        GameManager.instance.CheckInput(0, InputDirection.Down);
+        GameManager.instance.CheckInput(index, InputDirection.Down);
     }
 
     private void LeftInputPerformed(InputAction.CallbackContext context) {
-        GameManager.instance.CheckInput(0, InputDirection.Left);
+        GameManager.instance.CheckInput(index, InputDirection.Left);
     }
 
     private void RightInputPerformed(InputAction.CallbackContext context) {
-        GameManager.instance.CheckInput(0, InputDirection.Right);
+        GameManager.instance.CheckInput(index, InputDirection.Right);
     }
 }

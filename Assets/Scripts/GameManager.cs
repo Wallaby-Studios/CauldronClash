@@ -46,12 +46,17 @@ public class GameManager : MonoBehaviour {
     private List<InputDirection> sequence;
     [SerializeField]
     private List<int> currentPlayerIndecies;
+    [SerializeField]
+    private float gameTimerMax;
+
+    private float gameTimerCurrent;
     #endregion Fields
 
     #region Properties
     public GameState CurrentGameState { get { return currentGameState; } }
     public int MinPlayerCount { get { return minPlayerCount; } }
     public List<InputDirection> Sequence { get { return sequence; } }
+    public float GameTimerCurrent { get { return gameTimerCurrent; } }
     #endregion Properties
 
     // Start is called before the first frame update
@@ -81,6 +86,7 @@ public class GameManager : MonoBehaviour {
                 break;
             case GameState.Game:
                 playerInputManager.DisableJoining();
+                gameTimerCurrent = gameTimerMax;
                 SetupGame();
                 break;
             case GameState.GameEnd:
@@ -138,34 +144,29 @@ public class GameManager : MonoBehaviour {
                 // Otherwise, update its arrow
                 UIManager.instance.AdvanceArrow(playerIndex);
             }
+            // TODO: Throw in good ingredient... YUM
         } else {
             // If the input is incorrect, disable the player from inputting further
             PlayerInputControls playerInputControls = playersParent.transform.GetChild(playerIndex).GetComponent<PlayerInputControls>();
             if(playerInputControls != null) {
                 playerInputControls.DisableInput();
             }
+            // TODO: Throw in onion... STINKY
         }
     }
 
     /// <summary>
-    /// Add CPUs to the game until the minimum player count is reached
+    /// Add a CPU to the game
     /// </summary>
-    public void FillPlayersWithCPUs() {
-        int currentPlayerCount = playersParent.transform.childCount;
+    public void AddCPUInput() {
+        int newIndex = playersParent.transform.childCount;
 
-        // Check if enough players are created, if not, fill in with CPU
-        int numberOfPlayers = Mathf.Max(minPlayerCount, currentPlayerCount);
-        for(int i = 0; i < numberOfPlayers; i++) {
-            // Create a CPU until the minimum players are hit
-            if(i >= currentPlayerCount) {
-                // Create a CPU gameObject as a child of the players gameObject, name it "CPU#", and set its player index
-                GameObject computer = Instantiate(computerPrefab, playersParent.transform);
-                computer.name = "CPU" + i;
-                computer.GetComponent<ComputerInput>().Index = i;
-                // Update UI
-                UIManager.instance.DisplayJoinedPlayer(i, computer.GetComponent<ComputerInput>());
-            }
-        }
+        // Create a CPU gameObject as a child of the players gameObject, name it "CPU#", and set its player index
+        GameObject computer = Instantiate(computerPrefab, playersParent.transform);
+        computer.name = "CPU" + newIndex;
+        computer.GetComponent<ComputerInput>().Index = newIndex;
+        // Update UI
+        UIManager.instance.DisplayJoinedPlayer(newIndex, computer.GetComponent<ComputerInput>());
     }
     #endregion Public Methods
 
@@ -189,12 +190,7 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     private void SetupGame() {
         // Generate input sequence
-        sequence = new List<InputDirection>();
-        for(int i = 0; i < sequenceLength; i++) {
-            int randomIndex = UnityEngine.Random.Range(0, Enum.GetNames(typeof(InputDirection)).Length);
-            InputDirection randomInputKey = (InputDirection)randomIndex;
-            sequence.Add(randomInputKey);
-        }
+        sequence = GenerateSequence();
         UIManager.instance.DisplaySequence();
 
         // Create a "progress" index for each player
@@ -202,6 +198,16 @@ public class GameManager : MonoBehaviour {
         for(int i = 0; i < playersParent.transform.childCount; i++) {
             currentPlayerIndecies.Add(0);
         }
+    }
+
+    private List<InputDirection> GenerateSequence() {
+        List <InputDirection> newSequence = new List<InputDirection>();
+        for(int i = 0; i < sequenceLength; i++) {
+            int randomIndex = UnityEngine.Random.Range(0, Enum.GetNames(typeof(InputDirection)).Length);
+            InputDirection randomInputKey = (InputDirection)randomIndex;
+            newSequence.Add(randomInputKey);
+        }
+        return newSequence;
     }
 
     /// <summary>

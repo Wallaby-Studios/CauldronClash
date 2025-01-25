@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour {
     [SerializeField]    // Menu UI Parents
     private GameObject mainMenuUIParent, playerJoinUIParent, gameUIParent, gameEndUIParent;
     [SerializeField]    // Buttons
-    private Button mainMenuToPlayerJoinButton, playerJoinToGameButton, fillWithCPUsButton, gameEndToMainMenuButton;
+    private Button mainMenuToPlayerJoinButton, playerJoinToGameButton, addCPUButton, gameEndToMainMenuButton;
     [SerializeField]    // Text
     private TMP_Text sequenceText, gameEndTitle;
     [SerializeField]
@@ -187,7 +187,7 @@ public class UIManager : MonoBehaviour {
     private void SetupButtons() {
         mainMenuToPlayerJoinButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.PlayerJoin));
         playerJoinToGameButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.Game));
-        fillWithCPUsButton.onClick.AddListener(GameManager.instance.FillPlayersWithCPUs);
+        addCPUButton.onClick.AddListener(GameManager.instance.AddCPUInput);
         gameEndToMainMenuButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.MainMenu));
     }
 }

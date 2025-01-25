@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class EntityInput : MonoBehaviour {
     protected int index;
+
     private float inputDisabledTimerMax, inputDisabledTimer;
     private bool isInputEnabled;
+    private int completedPotions;
 
     public int Index {
         get { return index; }
         set { if(value >= 0) index = value; }
     }
     public bool IsInputEnabled { get { return isInputEnabled; } }
+    public int CompletedPotionsCount { get { return completedPotions; } }
 
     // Start is called before the first frame update
     protected virtual void Start() {
@@ -47,5 +50,13 @@ public class EntityInput : MonoBehaviour {
     public virtual void EnableInput() {
         isInputEnabled = true;
         UIManager.instance.UpdateArrow(index, true);
+    }
+
+    public void ClearPotions() {
+        completedPotions = 0;
+    }
+
+    public void CompletePotion() {
+        completedPotions++;
     }
 }
