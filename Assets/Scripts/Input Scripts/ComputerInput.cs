@@ -44,19 +44,19 @@ public class ComputerInput : EntityInput
     public void UpdateDifficulty(ComputerDifficulty newDifficulty) {
         switch(difficulty) {
             case ComputerDifficulty.Easy:
-                inputRate = 1.5f;
+                inputRate = 1.5f;   // 12s per sequence, max of 1
                 wrongInputChance = 0.2f;
                 break;
             case ComputerDifficulty.Medium:
-                inputRate = 1.0f;
+                inputRate = 1.0f;   // 8s per sequence, max of 2
                 wrongInputChance = 0.1f;
                 break;
             case ComputerDifficulty.Hard:
-                inputRate = 0.5f;
-                wrongInputChance = 0.0f;
+                inputRate = 0.5f;   // 4s per sequence, max of 4 (time runs out before 5th)
+                wrongInputChance = 0.05f;
                 break;
             case ComputerDifficulty.Impossible:
-                inputRate = 0.25f;
+                inputRate = 0.25f;  // 2s per sequence, max of 9 (time runs out before 10th)
                 wrongInputChance = 0.0f;
                 break;
         }

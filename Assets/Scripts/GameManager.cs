@@ -158,19 +158,27 @@ public class GameManager : MonoBehaviour
                 if(playerTotals[playerIndex] >= sequences.Count) {
                     sequences.Add(GenerateSequence());
                 }
+                // ===========
+                // Play sound for completing a potion
+                // ===========
                 ResetProgress(playerIndex);
                 UIManager.instance.DisplaySequence(playerIndex);
             } else {
-                // Otherwise, update its arrow
+                // ===========
+                // Call method to spawn a good ingrient 
+                // ===========
+
+                // Otherwise, update its indicator
                 UIManager.instance.AdvanceSequenceIndicator(playerIndex);
-                // TODO: Throw in good ingredient... YUM
             }
         } else {
             // If the input is incorrect, disable the player from inputting further
             PlayerInputControls playerInputControls = playersParent.transform.GetChild(playerIndex).GetComponent<PlayerInputControls>();
             if(playerInputControls != null) {
                 ResetProgress(playerIndex);
-                // TODO: Throw in onion... STINKY
+                // ===========
+                // Call method to spawn a bad ingrient 
+                // ===========
             }
         }
     }
