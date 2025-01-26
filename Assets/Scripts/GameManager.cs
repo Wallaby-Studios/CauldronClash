@@ -37,36 +37,46 @@ public class GameManager : MonoBehaviour {
     private PlayerInputManager playerInputManager;
 
     [SerializeField]
-    private GameObject playersParent;
-    [SerializeField]
-    private GameObject computerPrefab;
+    private GameObject playersParent, computerPrefab;
     [SerializeField]
     private int minPlayerCount, sequenceLength;
     [SerializeField]
-    private List<InputDirection> sequence;
+    private List<List<InputDirection>> sequences;
     [SerializeField]
-    private List<int> currentPlayerIndecies;
+    private List<int> currentPlayerIndecies, playerTotals;
     [SerializeField]
     private float gameTimerMax;
 
+    private List<string> playerNames;
     private float gameTimerCurrent;
     #endregion Fields
 
     #region Properties
     public GameState CurrentGameState { get { return currentGameState; } }
     public int MinPlayerCount { get { return minPlayerCount; } }
-    public List<InputDirection> Sequence { get { return sequence; } }
+    public List<List<InputDirection>> Sequences { get { return sequences; } }
+    public List<int> PlayerTotals { get { return playerTotals; } }
+    public List<string> PlayerNames { get { return playerNames; } }
     public float GameTimerCurrent { get { return gameTimerCurrent; } }
     #endregion Properties
 
     // Start is called before the first frame update
     void Start() {
         ChangeGameState(GameState.MainMenu);
-    }
+        playerNames = new List<string>();
+	}
 
-    // Update is called once per frame
-    void Update() {
-
+    void FixedUpdate() {
+        if(currentGameState == GameState.Game) {
+            gameTimerCurrent -= Time.deltaTime;
+            if(gameTimerCurrent <= 0.0f) {
+                if(playerTotals[0] > playerTotals[1]) {
+                    GameWon(0);
+                } else {
+                    GameWon(1);
+                }
+            }
+        }
     }
 
     #region Public Methods
@@ -79,6 +89,7 @@ public class GameManager : MonoBehaviour {
             case GameState.MainMenu:
                 // Joining is disabled initally on the PIM so this is redundant but just in case 
                 playerInputManager.DisableJoining();
+                sequences = new List<List<InputDirection>>();
                 break;
             case GameState.PlayerJoin:
                 // Only allow joining during this screen
@@ -86,7 +97,6 @@ public class GameManager : MonoBehaviour {
                 break;
             case GameState.Game:
                 playerInputManager.DisableJoining();
-                gameTimerCurrent = gameTimerMax;
                 SetupGame();
                 break;
             case GameState.GameEnd:
@@ -137,9 +147,15 @@ public class GameManager : MonoBehaviour {
             // Increment the player to the next input in the sequence 
             currentPlayerIndecies[playerIndex]++;
 
-            if(currentPlayerIndecies[playerIndex] >= sequence.Count) {
-                // End the round if a player has input the last of the sequence
-                GameWon(playerIndex);
+			// If a player has input the last of the sequence
+			if(currentPlayerIndecies[playerIndex] >= sequences[playerTotals[playerIndex]].Count) {
+                // Add to the player's total and reset the sequence
+                playerTotals[playerIndex]++;
+                if(playerTotals[playerIndex] >= sequences.Count) {
+                    sequences.Add(GenerateSequence());
+                }
+                ResetProgress(playerIndex);
+                UIManager.instance.DisplaySequence(playerIndex);
             } else {
                 // Otherwise, update its arrow
                 UIManager.instance.AdvanceSequenceIndicator(playerIndex);
@@ -164,8 +180,9 @@ public class GameManager : MonoBehaviour {
         if(childCount < GetComponent<PlayerInputManager>().maxPlayerCount) {
 			// Create a CPU gameObject as a child of the players gameObject, name it "CPU#", and set its player index
 			GameObject computer = Instantiate(computerPrefab, playersParent.transform);
-			computer.name = "CPU" + childCount;
+			computer.name = "CPU " + GeneratePlayerName();
 			computer.GetComponent<ComputerInput>().Index = childCount;
+            playerNames.Add(computer.name);
 			// Update UI
 			UIManager.instance.DisplayJoinedPlayer(childCount, computer.GetComponent<ComputerInput>());
 		}
@@ -173,7 +190,7 @@ public class GameManager : MonoBehaviour {
 
 	public void ResetProgress(int playerIndex) {
 		currentPlayerIndecies[playerIndex] = 0;
-        UIManager.instance.ResetArrow(playerIndex);
+        UIManager.instance.ResetIndicator(playerIndex);
 	}
 	#endregion Public Methods
 
@@ -184,30 +201,79 @@ public class GameManager : MonoBehaviour {
 	/// <param name="playerInput">The PlayerInput script of the new player</param>
 	private void PlayerInput_onPlayerJoined(PlayerInput playerInput) {
         // Set the player's name and index
-        playerInput.gameObject.name = string.Format("Player{0}", playersParent.transform.childCount);
-        playerInput.GetComponent<PlayerInputControls>().Index = GetPlayerCount();
+		playerInput.gameObject.name = GeneratePlayerName();
+		playerInput.GetComponent<PlayerInputControls>().Index = GetPlayerCount();
         // Move the player GameObject as a child of the players parent GameObject
         playerInput.gameObject.transform.SetParent(playersParent.transform);
+        playerNames.Add(playerInput.gameObject.name);
         // Update UI
         UIManager.instance.DisplayJoinedPlayer(playersParent.transform.childCount - 1, null);
+    }
+
+    private string GeneratePlayerName() {
+        List<string> firstName = new List<string>() {
+            "Stinky", 
+            "Moldy",
+            "Sweaty",
+            "Smart",
+            "Stupid",
+            "Dumb",
+            "Focused",
+            "Distracted",
+            "Rowdy",
+            "Musty",
+            "Wise",
+            "Funny",
+            "Nice",
+            "Kind",
+            "Jovial",
+            "Intelligent",
+            "Grumpy",
+            "Sleepy"
+        };
+        List<string> secondName = new List<string>() {
+            "Newt",
+            "Salamander",
+            "Iguana",
+            "Gecko",
+            "Dragon",
+            "Beaver",
+            "Otter",
+            "Shrew",
+            "Raccoon",
+            "Possum",
+            "Mouse",
+            "Rat",
+            "Squirrel",
+            "Chipmunk",
+            "Hyrax"
+        };
+
+        return string.Format(
+            "{0} {1}", 
+            firstName[UnityEngine.Random.Range(0, firstName.Count)],
+            secondName[UnityEngine.Random.Range(0, secondName.Count)]);
     }
 
     /// <summary>
     /// Set up initial values needed for each round
     /// </summary>
     private void SetupGame() {
-        // Generate an initial input sequence and display it to both players
-        sequence = GenerateSequence();
-        for(int i = 0; i < playersParent.transform.childCount; i++) {
+		// Set the game timer
+		gameTimerCurrent = gameTimerMax;
+
+		// Create a "progress" index and total counter for each player
+		currentPlayerIndecies = new List<int>();
+		playerTotals = new List<int>();
+		// Generate an initial input sequence and display it to both players
+		sequences.Add(GenerateSequence());
+
+		for(int i = 0; i < playersParent.transform.childCount; i++) {
+            currentPlayerIndecies.Add(0);
+			playerTotals.Add(0);
 			UIManager.instance.DisplaySequence(i);
 		}
-
-        // Create a "progress" index for each player
-        currentPlayerIndecies = new List<int>();
-        for(int i = 0; i < playersParent.transform.childCount; i++) {
-            currentPlayerIndecies.Add(0);
-        }
-    }
+	}
 
     private List<InputDirection> GenerateSequence() {
         List <InputDirection> newSequence = new List<InputDirection>();
@@ -226,7 +292,7 @@ public class GameManager : MonoBehaviour {
     /// <returns>The next input needed by the player</returns>
     private InputDirection GetNextKeyForPlayer(int playerNum) {
         int index = currentPlayerIndecies[playerNum];
-        return sequence[index];
+        return sequences[playerTotals[playerNum]][index];
     }
 
     /// <summary>

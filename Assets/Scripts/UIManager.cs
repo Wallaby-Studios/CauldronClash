@@ -27,7 +27,7 @@ public class UIManager : MonoBehaviour
 	[SerializeField]    // Buttons
 	private Button mainMenuToPlayerJoinButton, playerJoinToGameButton, addCPUButton, gameEndToMainMenuButton;
 	[SerializeField]    // Text
-	private TMP_Text gameEndTitle;
+	private TMP_Text gameEndTitle, gameEndPlayerStats;
 	[SerializeField]	// GameObject Parents
 	private GameObject playerListParent, playerSequenceParent;
 	[SerializeField]    // Prefabs
@@ -80,23 +80,29 @@ public class UIManager : MonoBehaviour
 				playerJoinUIParent.SetActive(false);
 				gameUIParent.SetActive(true);
 				for(int i = 0; i < playerSequenceParent.transform.childCount; i++) {
-					ResetArrow(i);
+					ResetIndicator(i);
 				}
 				break;
 			case GameState.GameEnd:
 				gameUIParent.SetActive(false);
 				gameEndUIParent.SetActive(true);
+				DisplayPlayerStats();
 				break;
 		}
 	}
 
 	public void DisplaySequence(int playerIndex) {
-		List<InputDirection> sequence = GameManager.instance.Sequence;
+		List<InputDirection> sequence = GameManager.instance.Sequences[GameManager.instance.PlayerTotals[playerIndex]];
+
+		Transform parentTransform = playerSequenceParent.transform.GetChild(playerIndex).GetChild(1);
+		// Reset all children 
+		for(int j = parentTransform.transform.childCount - 1; j >= 0; j--) {
+			Destroy(parentTransform.GetChild(j).gameObject);
+		}
 
 		for(int i = 0; i < sequence.Count; i++) {
 			GameObject arrowObjectPrefab = inputDirectionArrowMap[sequence[i]];
 			Vector2 position = new Vector2(sequenceArrowXOffset * i, 0.0f);
-			Transform parentTransform = playerSequenceParent.transform.GetChild(playerIndex).GetChild(1);
 			GameObject arrowObject = Instantiate(arrowObjectPrefab, parentTransform);
 			arrowObject.transform.localPosition = position;
 		}
@@ -130,7 +136,7 @@ public class UIManager : MonoBehaviour
 				playerListParent.transform);
 			cPUPlayerListItem.transform.localPosition = position;
 			cPUPlayerListItem.GetComponent<CPUPlayerUI>().SetupValues(
-				string.Format("CPU {0}", index + 1),
+				GameManager.instance.PlayerNames[index],
 				inputComponent);
 		} else {
 			// If inputComponent is null, a non-CPU player has joined
@@ -140,7 +146,7 @@ public class UIManager : MonoBehaviour
 				Quaternion.identity,
 				playerListParent.transform);
 			playerTextObject.transform.localPosition = position;
-			playerTextObject.GetComponent<TMP_Text>().text = string.Format("Player {0}", index + 1);
+			playerTextObject.GetComponent<TMP_Text>().text = GameManager.instance.PlayerNames[index];
 		}
 
 		UpdatePlayerJoinToGameButton();
@@ -161,7 +167,7 @@ public class UIManager : MonoBehaviour
 		gameEndTitle.text = string.Format("Player {0} Wins!", winningPlayerIndex + 1);
 	}
 
-	public void ResetArrow(int playerIndex) {
+	public void ResetIndicator(int playerIndex) {
 		playerSequenceParent.transform.GetChild(playerIndex).GetChild(0).localPosition = new Vector2(0.0f, 0.0f);
 	}
 	#endregion Public Methods
@@ -174,5 +180,15 @@ public class UIManager : MonoBehaviour
 		playerJoinToGameButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.Game));
 		addCPUButton.onClick.AddListener(GameManager.instance.AddCPUInput);
 		gameEndToMainMenuButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.MainMenu));
+	}
+
+	private void DisplayPlayerStats() {
+		gameEndPlayerStats.text = "";
+		for(int i = 0; i < GameManager.instance.GetPlayerCount(); i++) {
+			string playerName = GameManager.instance.PlayerNames[i];
+			int playerTotal = GameManager.instance.PlayerTotals[i];
+			string row = string.Format("{0}: {1}\n", playerName, playerTotal);
+			gameEndPlayerStats.text += row;
+		}
 	}
 }

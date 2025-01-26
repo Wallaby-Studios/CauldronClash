@@ -11,7 +11,8 @@ public enum InputDirection {
 }
 
 public class PlayerInputControls : EntityInput {
-    public PlayerInputActions playerContols;
+    private InputActionAsset inputAsset;
+    private InputActionMap player;
 
     private InputAction inputUp;
     private InputAction inputDown;
@@ -19,34 +20,25 @@ public class PlayerInputControls : EntityInput {
     private InputAction inputRight;
 
     private void Awake() {
-        playerContols = new PlayerInputActions();
-    }
+		inputAsset = GetComponent<PlayerInput>().actions;
+		player = inputAsset.FindActionMap("Player");
+	}
 
     private void OnEnable() {
-        inputUp = playerContols.Player.InputUp;
-        inputUp.Enable();
-        inputUp.performed += UpInputPerformed;
-        inputDown = playerContols.Player.InputDown;
-        inputDown.Enable();
-        inputDown.performed += DownInputPerformed;
-        inputLeft = playerContols.Player.InputLeft;
-        inputLeft.Enable();
-        inputLeft.performed += LeftInputPerformed;
-        inputRight = playerContols.Player.InputRight;
-        inputRight.Enable();
-        inputRight.performed += RightInputPerformed;
-    }
+        player.FindAction("InputUp").started += UpInputPerformed;
+		player.FindAction("InputDown").started += DownInputPerformed;
+		player.FindAction("InputLeft").started += LeftInputPerformed;
+		player.FindAction("InputRight").started += RightInputPerformed;
+		player.Enable();
+	}
 
     private void OnDisable() {
-        inputUp.Disable();
-        inputUp.performed -= UpInputPerformed;
-        inputDown.Disable();
-        inputDown.performed -= DownInputPerformed;
-        inputLeft.Disable();
-        inputLeft.performed -= LeftInputPerformed;
-        inputRight.Disable();
-        inputRight.performed -= RightInputPerformed;
-    }
+		player.FindAction("InputUp").started -= UpInputPerformed;
+		player.FindAction("InputDown").started -= DownInputPerformed;
+		player.FindAction("InputLeft").started -= LeftInputPerformed;
+		player.FindAction("InputRight").started -= RightInputPerformed;
+		player.Disable();
+	}
 
     // Start is called before the first frame update
     protected override void Start() {

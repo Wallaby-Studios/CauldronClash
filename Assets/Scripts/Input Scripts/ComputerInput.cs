@@ -25,15 +25,15 @@ public class ComputerInput : EntityInput {
         base.Start();
         switch(difficulty) {
             case ComputerDifficulty.Easy:
-                inputRate = 2.0f;
-                wrongInputChance = 0.4f;
-                break;
-            case ComputerDifficulty.Medium:
-                inputRate = 1.5f;
+                inputRate = 0.5f;
                 wrongInputChance = 0.2f;
                 break;
+            case ComputerDifficulty.Medium:
+                inputRate = 0.25f;
+                wrongInputChance = 0.1f;
+                break;
             case ComputerDifficulty.Hard:
-                inputRate = 1.0f;
+                inputRate = 0.125f;
                 wrongInputChance = 0.0f;
                 break;
         }
