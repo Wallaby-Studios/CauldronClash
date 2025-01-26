@@ -36,7 +36,7 @@ public class VoiceLineManager : MonoBehaviour
 
     public void playBadClip()
     {
-        if (timeSinceLastLine > cooldown)
+        if (timeSinceLastLine > cooldown/2)
         {
             AudioClip current = badClipList[Random.Range(0, badClipList.Count - 1)];
             audio.clip = current;

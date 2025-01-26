@@ -49,7 +49,8 @@ public class GameManager : MonoBehaviour
     private List<int> currentPlayerIndecies, playerTotals;
     [SerializeField]
     private float gameTimerMax;
-
+    public IngredientSpawner p0Spawner;
+    public IngredientSpawner p1Spawner;
     private List<string> playerNames;
     private float gameTimerCurrent;
     #endregion Fields
@@ -67,6 +68,9 @@ public class GameManager : MonoBehaviour
     void Start() {
         ChangeGameState(GameState.MainMenu);
         playerNames = new List<string>();
+        //p0Spawner = FindObjectsOfType<IngredientSpawner>()[0];
+        //p1Spawner = FindObjectsOfType<IngredientSpawner>()[1];
+
     }
 
     void FixedUpdate() {
@@ -163,7 +167,14 @@ public class GameManager : MonoBehaviour
                 // ===========
                 // Call method to spawn a good ingrient 
                 // ===========
-
+                if (playerIndex == 0)
+                {
+                    p0Spawner.SpawnGoodItem();
+                }
+                else
+                {
+                    p1Spawner.SpawnGoodItem();
+                }
                 // Otherwise, update its indicator
                 UIManager.instance.AdvanceSequenceIndicator(playerIndex, currentPlayerIndecies[playerIndex]);
             }
@@ -175,6 +186,16 @@ public class GameManager : MonoBehaviour
                 // ===========
                 // Call method to spawn a bad ingrient 
                 // ===========
+                if (playerIndex == 0)
+                {
+                    p0Spawner.SpawnBadItem();
+                    p0Spawner.BubbleOver();
+                }
+                else
+                {
+                    p1Spawner.SpawnBadItem();
+                    p1Spawner.BubbleOver();
+                }
             }
         }
     }

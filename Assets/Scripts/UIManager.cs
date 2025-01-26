@@ -96,7 +96,7 @@ public class UIManager : MonoBehaviour
 
     public void DisplaySequence(int playerIndex) {
         List<InputDirection> sequence = GameManager.instance.Sequences[GameManager.instance.PlayerTotals[playerIndex]];
-
+        Debug.Log(playerSequenceParent.transform.GetChild(playerIndex).GetChild(1).gameObject.name);
         Transform parentTransform = playerSequenceParent.transform.GetChild(playerIndex).GetChild(1);
         // Reset all children 
         for(int j = parentTransform.transform.childCount - 1; j >= 0; j--) {

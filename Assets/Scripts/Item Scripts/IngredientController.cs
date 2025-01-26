@@ -5,40 +5,47 @@ using UnityEngine;
 
 public class IngredientController : MonoBehaviour
 {
+    public List<Sprite> sprites = new List<Sprite>();
     VoiceLineManager voiceLineManager;
     ItemSoundsManager itemSoundsManager;
     BadSoundsManager badSoundsManager;
     public int goodClipPercentage;
+    public IngredientSpawner spawner;
     bool isBad = false;
     // Start is called before the first frame update
+
+    public IngredientController(IngredientSpawner s)
+    {
+        spawner = s;
+    }    
     void Start()
     {
-        badSoundsManager = FindObjectOfType<BadSoundsManager>();
-        voiceLineManager = FindObjectOfType<VoiceLineManager>();
-        itemSoundsManager = FindObjectOfType<ItemSoundsManager>();
+        if (isBad == true)
+        {
+            GetComponent<SpriteRenderer>().sprite = sprites[4];
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().sprite = sprites[Random.Range(0, sprites.Count - 1)];
+        }
+        if (spawner != null)
+        {
+            badSoundsManager = spawner.badSoundsManager;
+            voiceLineManager = spawner.voiceLineManager;
+            itemSoundsManager = spawner.itemSoundsManager;
+        }
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        /*
-        if (Input.GetMouseButtonDown(0))
-        {
-            transform.position = new Vector2(Random.Range(-8,-3), 3);
-            GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            GetComponent<Rigidbody2D>().AddForce(new Vector2(0.25f, 1f) * 100);
-        }
-        if (Input.GetMouseButtonDown(1))
-        {
-            transform.position = new Vector2(Random.Range(-8,-3), 3);
-            GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            isBad = true;
-        }
-        */
+
     }
 
     public void setBad()
     {
+        GetComponent<SpriteRenderer>().sprite = sprites[4];
         isBad = true;
     }
 
@@ -49,6 +56,7 @@ public class IngredientController : MonoBehaviour
             itemSoundsManager.playSplash();
             if (isBad)
             {
+                
                 voiceLineManager.playBadClip();
                 badSoundsManager.PlayBadSound();
                 isBad = false;

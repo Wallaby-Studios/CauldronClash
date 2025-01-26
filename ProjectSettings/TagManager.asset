@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Cauldron
   - StankBubbles
+  - P0Spawner
+  - P1Spawner
   layers:
   - Default
   - TransparentFX

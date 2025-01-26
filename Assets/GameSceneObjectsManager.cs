@@ -8,7 +8,10 @@ public class GameSceneObjectsManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        foreach (Transform child in transform)
+        {
+            ch.Add(child.gameObject);
+        }
     }
 
     // Update is called once per frame
@@ -16,9 +19,9 @@ public class GameSceneObjectsManager : MonoBehaviour
     {
         if (GameManager.instance.CurrentGameState == GameState.Game)
         {
-            foreach (Transform child in transform)
+            foreach (GameObject child in ch)
             {
-                ch.Add(child.gameObject);
+                child.SetActive(false);
             }
         }
     }
