@@ -26,7 +26,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]    // Menu UI Parents
     private GameObject mainMenuUIParent, playerJoinUIParent, gameUIParent, gameEndUIParent;
     [SerializeField]    // Buttons
-    private Button mainMenuToPlayerJoinButton, playerJoinToGameButton, addCPUButton, gameEndToMainMenuButton;
+    private Button mainMenuToPlayerJoinButton, quitButton, playerJoinToGameButton, addCPUButton, gameEndToMainMenuButton;
     [SerializeField]    // Text
     private TMP_Text gameEndTitle, gameEndPlayerStats;
     [SerializeField]    // GameObject Parents
@@ -192,6 +192,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void SetupButtons() {
         mainMenuToPlayerJoinButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.PlayerJoin));
+        quitButton.onClick.AddListener(() => Application.Quit());
         playerJoinToGameButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.Game));
         addCPUButton.onClick.AddListener(GameManager.instance.AddCPUInput);
         gameEndToMainMenuButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.MainMenu));
