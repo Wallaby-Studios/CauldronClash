@@ -112,16 +112,6 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Advance the position of the arrow
-    /// </summary>
-    /// <param name="playerIndex">The int index of the player</param>
-    public void AdvanceSequenceIndicator(int playerIndex) {
-        Vector2 pos = playerSequenceParent.transform.GetChild(playerIndex).GetChild(0).position;
-        pos.x += sequenceArrowXOffset;
-        playerSequenceParent.transform.GetChild(playerIndex).GetChild(0).position = pos;
-    }
-
-    /// <summary>
     /// Create a UI element when a player joins (player or CPU)
     /// </summary>
     /// <param name="index">The int index of the player joined</param>
@@ -172,8 +162,19 @@ public class UIManager : MonoBehaviour
         gameEndTitle.text = gameEndTitleText;
     }
 
+    /// <summary>
+    /// Advance the position of the arrow
+    /// </summary>
+    /// <param name="playerIndex">The int index of the player</param>
+    /// <param name="progressIndex">The int of the sequence icon the player is now on</param>
+    public void AdvanceSequenceIndicator(int playerIndex, int progressIndex) {
+        Vector2 positionOfNextSequenceIcon = playerSequenceParent.transform.GetChild(playerIndex).GetChild(1).GetChild(progressIndex).position;
+        playerSequenceParent.transform.GetChild(playerIndex).GetChild(0).position = positionOfNextSequenceIcon;
+    }
+
     public void ResetIndicator(int playerIndex) {
-        playerSequenceParent.transform.GetChild(playerIndex).GetChild(0).localPosition = new Vector2(0.0f, 0.0f);
+        Vector2 positionOfFirstSequenceIcon = playerSequenceParent.transform.GetChild(playerIndex).GetChild(1).GetChild(0).position;
+        playerSequenceParent.transform.GetChild(playerIndex).GetChild(0).position = positionOfFirstSequenceIcon;
     }
 
     public void UpdateGameTimerBar(float timeLeftPercentage) {

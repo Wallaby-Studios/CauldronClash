@@ -165,7 +165,7 @@ public class GameManager : MonoBehaviour
                 // ===========
 
                 // Otherwise, update its indicator
-                UIManager.instance.AdvanceSequenceIndicator(playerIndex);
+                UIManager.instance.AdvanceSequenceIndicator(playerIndex, currentPlayerIndecies[playerIndex]);
             }
         } else {
             // If the input is incorrect, disable the player from inputting further
