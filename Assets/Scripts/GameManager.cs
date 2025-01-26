@@ -81,6 +81,19 @@ public class GameManager : MonoBehaviour
                 GameOver();
             }
         }
+
+        if (currentGameState == GameState.PlayerJoin)
+        {
+            if (playersParent.transform.childCount >= 2)
+            {
+                playerInputManager.DisableJoining();
+            }
+            else
+            {
+                playerInputManager.EnableJoining();
+            }
+        }
+        
     }
 
     #region Public Methods
@@ -205,7 +218,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void AddCPUInput() {
         int childCount = playersParent.transform.childCount;
-
+        Debug.Log(childCount);
+        Debug.Log(GetComponent<PlayerInputManager>().maxPlayerCount);
         if(childCount < GetComponent<PlayerInputManager>().maxPlayerCount) {
             // Create a CPU gameObject as a child of the players gameObject, name it "CPU#", and set its player index
             GameObject computer = Instantiate(computerPrefab, playersParent.transform);
