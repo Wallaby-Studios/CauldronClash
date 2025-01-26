@@ -8,7 +8,7 @@ public class VoiceLineManager : MonoBehaviour
     public List<AudioClip> goodclipList;
     public List<AudioClip> badClipList;
     public float cooldown = 7;
-    public float timeSinceLastLine = 0;
+    public float timeSinceLastLine = 7;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,7 +27,7 @@ public class VoiceLineManager : MonoBehaviour
         {
             AudioClip current = goodclipList[Random.Range(0, goodclipList.Count)];
             audio.clip = current;
-            audio.pitch = Random.Range(1, 1.5f);
+            //audio.pitch = Random.Range(1, 1.5f);
             audio.Play();
             timeSinceLastLine = 0;
         }
@@ -40,7 +40,7 @@ public class VoiceLineManager : MonoBehaviour
         {
             AudioClip current = badClipList[Random.Range(0, badClipList.Count - 1)];
             audio.clip = current;
-            audio.pitch = Random.Range(1, 1.5f);
+            //audio.pitch = Random.Range(1, 1.5f);
             audio.Play();
             timeSinceLastLine = 0;
         }
