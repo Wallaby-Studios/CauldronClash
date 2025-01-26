@@ -167,9 +167,9 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// Update the Game End Title Text
     /// </summary>
-    /// <param name="winningPlayerIndex">The index of the winning player</param>
-    public void UpdateGameEndText(int winningPlayerIndex) {
-        gameEndTitle.text = string.Format("Player {0} Wins!", winningPlayerIndex + 1);
+    /// <param name="gameEndTitleText">The string for what the game end title should read</param>
+    public void UpdateGameEndText(string gameEndTitleText) {
+        gameEndTitle.text = gameEndTitleText;
     }
 
     public void ResetIndicator(int playerIndex) {

@@ -74,11 +74,7 @@ public class GameManager : MonoBehaviour
             gameTimerCurrent -= Time.deltaTime;
             UIManager.instance.UpdateGameTimerBar(gameTimerCurrent / gameTimerMax);
             if(gameTimerCurrent <= 0.0f) {
-                if(playerTotals[0] > playerTotals[1]) {
-                    GameWon(0);
-                } else {
-                    GameWon(1);
-                }
+                GameOver();
             }
         }
     }
@@ -315,10 +311,15 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Move the game to the game end state
     /// </summary>
-    /// <param name="winningPlayerIndex">The index of the winning player</param>
-    private void GameWon(int winningPlayerIndex) {
-        //Debug.Log(string.Format("Player {0} Wins!", winningPlayerIndex + 1));
-        UIManager.instance.UpdateGameEndText(winningPlayerIndex);
+    private void GameOver() {
+        string gameEndTitleText = "Tie Game";
+        if(playerTotals[0] > playerTotals[1]) {
+            gameEndTitleText = string.Format("{0} Wins", playerNames[0]);
+        } else if(playerTotals[0] < playerTotals[1]) {
+            gameEndTitleText = string.Format("{0} Wins", playerNames[1]);
+        }
+
+        UIManager.instance.UpdateGameEndText(gameEndTitleText);
         ChangeGameState(GameState.GameEnd);
     }
     #endregion Private Methods
