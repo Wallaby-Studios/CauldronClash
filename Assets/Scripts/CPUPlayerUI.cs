@@ -13,19 +13,12 @@ public class CPUPlayerUI : MonoBehaviour
     private ComputerDifficulty difficulty;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         difficulty = ComputerDifficulty.Easy;
         difficultyText.text = difficulty.ToString();
 
         previousDifficultyButton.onClick.AddListener(PreviousDifficultyText);
         nextDifficultyButton.onClick.AddListener(NextDifficultyText);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     /// <summary>

@@ -3,42 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ComputerDifficulty {
+public enum ComputerDifficulty
+{
     Easy,
     Medium,
-    Hard
+    Hard,
+    Cheating
 }
 
-public class ComputerInput : EntityInput {
+public class ComputerInput : EntityInput
+{
     [SerializeField]
     private ComputerDifficulty difficulty;
 
-    private float inputRate;
-    private float wrongInputChance;
-
-    private float currentTimer;
+    private float inputRate, wrongInputChance, currentTimer;
 
     public ComputerDifficulty Difficulty { get { return difficulty; } }
 
     // Start is called before the first frame update
     protected override void Start() {
         base.Start();
-        switch(difficulty) {
-            case ComputerDifficulty.Easy:
-                inputRate = 0.5f;
-                wrongInputChance = 0.2f;
-                break;
-            case ComputerDifficulty.Medium:
-                inputRate = 0.25f;
-                wrongInputChance = 0.1f;
-                break;
-            case ComputerDifficulty.Hard:
-                inputRate = 0.125f;
-                wrongInputChance = 0.0f;
-                break;
-        }
-
-        currentTimer = inputRate;
+        UpdateDifficulty(difficulty);
     }
 
     protected override void FixedUpdate() {
@@ -50,13 +35,33 @@ public class ComputerInput : EntityInput {
                 // Randomize whether the input is correct (based on difficulty)
                 float random = UnityEngine.Random.Range(0.0f, 1.0f);
                 bool isInputCorrect = random > wrongInputChance;
-                if(!isInputCorrect) {
-                    GameManager.instance.ResetProgress(index);
-                }
                 SubmitInput(isInputCorrect);
                 currentTimer = inputRate;
             }
         }
+    }
+
+    public void UpdateDifficulty(ComputerDifficulty newDifficulty) {
+        switch(difficulty) {
+            case ComputerDifficulty.Easy:
+                inputRate = 1.5f;
+                wrongInputChance = 0.2f;
+                break;
+            case ComputerDifficulty.Medium:
+                inputRate = 1.0f;
+                wrongInputChance = 0.1f;
+                break;
+            case ComputerDifficulty.Hard:
+                inputRate = 0.5f;
+                wrongInputChance = 0.0f;
+                break;
+            case ComputerDifficulty.Cheating:
+                inputRate = 0.25f;
+                wrongInputChance = 0.0f;
+                break;
+        }
+
+        currentTimer = inputRate;
     }
 
     /// <summary>
@@ -81,6 +86,7 @@ public class ComputerInput : EntityInput {
         }
         // Set the difficulty and the difficulty text
         difficulty = (ComputerDifficulty)previousEnumIndex;
+        UpdateDifficulty(difficulty);
         return difficulty;
     }
 
@@ -98,6 +104,7 @@ public class ComputerInput : EntityInput {
         }
         // Set the difficulty and the difficulty text
         difficulty = (ComputerDifficulty)nextEnumIndex;
+        UpdateDifficulty(difficulty);
         return difficulty;
     }
 }

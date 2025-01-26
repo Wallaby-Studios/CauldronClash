@@ -2,16 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public enum GameState {
+public enum GameState
+{
     MainMenu,
     PlayerJoin,
     Game,
     GameEnd
 }
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
     #region Singleton Code
     // A public reference to this script
     public static GameManager instance = null;
@@ -64,7 +67,7 @@ public class GameManager : MonoBehaviour {
     void Start() {
         ChangeGameState(GameState.MainMenu);
         playerNames = new List<string>();
-	}
+    }
 
     void FixedUpdate() {
         if(currentGameState == GameState.Game) {
@@ -147,8 +150,8 @@ public class GameManager : MonoBehaviour {
             // Increment the player to the next input in the sequence 
             currentPlayerIndecies[playerIndex]++;
 
-			// If a player has input the last of the sequence
-			if(currentPlayerIndecies[playerIndex] >= sequences[playerTotals[playerIndex]].Count) {
+            // If a player has input the last of the sequence
+            if(currentPlayerIndecies[playerIndex] >= sequences[playerTotals[playerIndex]].Count) {
                 // Add to the player's total and reset the sequence
                 playerTotals[playerIndex]++;
                 if(playerTotals[playerIndex] >= sequences.Count) {
@@ -159,15 +162,15 @@ public class GameManager : MonoBehaviour {
             } else {
                 // Otherwise, update its arrow
                 UIManager.instance.AdvanceSequenceIndicator(playerIndex);
+                // TODO: Throw in good ingredient... YUM
             }
-            // TODO: Throw in good ingredient... YUM
         } else {
             // If the input is incorrect, disable the player from inputting further
             PlayerInputControls playerInputControls = playersParent.transform.GetChild(playerIndex).GetComponent<PlayerInputControls>();
             if(playerInputControls != null) {
                 ResetProgress(playerIndex);
+                // TODO: Throw in onion... STINKY
             }
-            // TODO: Throw in onion... STINKY
         }
     }
 
@@ -178,31 +181,31 @@ public class GameManager : MonoBehaviour {
         int childCount = playersParent.transform.childCount;
 
         if(childCount < GetComponent<PlayerInputManager>().maxPlayerCount) {
-			// Create a CPU gameObject as a child of the players gameObject, name it "CPU#", and set its player index
-			GameObject computer = Instantiate(computerPrefab, playersParent.transform);
-			computer.name = "CPU " + GeneratePlayerName();
-			computer.GetComponent<ComputerInput>().Index = childCount;
+            // Create a CPU gameObject as a child of the players gameObject, name it "CPU#", and set its player index
+            GameObject computer = Instantiate(computerPrefab, playersParent.transform);
+            computer.name = string.Format("{0} (CPU)", GeneratePlayerName());
+            computer.GetComponent<ComputerInput>().Index = childCount;
             playerNames.Add(computer.name);
-			// Update UI
-			UIManager.instance.DisplayJoinedPlayer(childCount, computer.GetComponent<ComputerInput>());
-		}
-	}
+            // Update UI
+            UIManager.instance.DisplayJoinedPlayer(childCount, computer.GetComponent<ComputerInput>());
+        }
+    }
 
-	public void ResetProgress(int playerIndex) {
-		currentPlayerIndecies[playerIndex] = 0;
+    public void ResetProgress(int playerIndex) {
+        currentPlayerIndecies[playerIndex] = 0;
         UIManager.instance.ResetIndicator(playerIndex);
-	}
-	#endregion Public Methods
+    }
+    #endregion Public Methods
 
-	#region Private Methods
-	/// <summary>
-	/// A method called when a player joins via the PlayerInputManager
-	/// </summary>
-	/// <param name="playerInput">The PlayerInput script of the new player</param>
-	private void PlayerInput_onPlayerJoined(PlayerInput playerInput) {
+    #region Private Methods
+    /// <summary>
+    /// A method called when a player joins via the PlayerInputManager
+    /// </summary>
+    /// <param name="playerInput">The PlayerInput script of the new player</param>
+    private void PlayerInput_onPlayerJoined(PlayerInput playerInput) {
         // Set the player's name and index
-		playerInput.gameObject.name = GeneratePlayerName();
-		playerInput.GetComponent<PlayerInputControls>().Index = GetPlayerCount();
+        playerInput.gameObject.name = GeneratePlayerName();
+        playerInput.GetComponent<PlayerInputControls>().Index = GetPlayerCount();
         // Move the player GameObject as a child of the players parent GameObject
         playerInput.gameObject.transform.SetParent(playersParent.transform);
         playerNames.Add(playerInput.gameObject.name);
@@ -212,7 +215,7 @@ public class GameManager : MonoBehaviour {
 
     private string GeneratePlayerName() {
         List<string> firstName = new List<string>() {
-            "Stinky", 
+            "Stinky",
             "Moldy",
             "Sweaty",
             "Smart",
@@ -250,7 +253,7 @@ public class GameManager : MonoBehaviour {
         };
 
         return string.Format(
-            "{0} {1}", 
+            "{0} {1}",
             firstName[UnityEngine.Random.Range(0, firstName.Count)],
             secondName[UnityEngine.Random.Range(0, secondName.Count)]);
     }
@@ -259,24 +262,24 @@ public class GameManager : MonoBehaviour {
     /// Set up initial values needed for each round
     /// </summary>
     private void SetupGame() {
-		// Set the game timer
-		gameTimerCurrent = gameTimerMax;
+        // Set the game timer
+        gameTimerCurrent = gameTimerMax;
 
-		// Create a "progress" index and total counter for each player
-		currentPlayerIndecies = new List<int>();
-		playerTotals = new List<int>();
-		// Generate an initial input sequence and display it to both players
-		sequences.Add(GenerateSequence());
+        // Create a "progress" index and total counter for each player
+        currentPlayerIndecies = new List<int>();
+        playerTotals = new List<int>();
+        // Generate an initial input sequence and display it to both players
+        sequences.Add(GenerateSequence());
 
-		for(int i = 0; i < playersParent.transform.childCount; i++) {
+        for(int i = 0; i < playersParent.transform.childCount; i++) {
             currentPlayerIndecies.Add(0);
-			playerTotals.Add(0);
-			UIManager.instance.DisplaySequence(i);
-		}
-	}
+            playerTotals.Add(0);
+            UIManager.instance.DisplaySequence(i);
+        }
+    }
 
     private List<InputDirection> GenerateSequence() {
-        List <InputDirection> newSequence = new List<InputDirection>();
+        List<InputDirection> newSequence = new List<InputDirection>();
         for(int i = 0; i < sequenceLength; i++) {
             int randomIndex = UnityEngine.Random.Range(0, Enum.GetNames(typeof(InputDirection)).Length);
             InputDirection randomInputKey = (InputDirection)randomIndex;

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 211cd2e0461ec01479212dd9e059146d
+guid: 46aeac78f6424bb488d21ea3219d6ef5
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Super Pixel
+  - Qaaxee
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
