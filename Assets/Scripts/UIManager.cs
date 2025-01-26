@@ -30,14 +30,17 @@ public class UIManager : MonoBehaviour
     [SerializeField]    // Text
     private TMP_Text gameEndTitle, gameEndPlayerStats;
     [SerializeField]    // GameObject Parents
-    private GameObject playerListParent, playerSequenceParent;
+    private GameObject player1JoinParent, player2JoinParent, playerSequenceParent;
     [SerializeField]    // Prefabs
     private GameObject playerListPrefab, cPUPlayerListPrefab;
     [SerializeField]    // Arrow Sprites
     private GameObject arrowUpPrefab, arrowDownPrefab, arrowLeftPrefab, arrowRightPrefab;
+    [SerializeField]    // Game Timer Bars
+    private GameObject gameTimerBarBackground, gameTimerBarValueObject;
 
     private Dictionary<InputDirection, GameObject> inputDirectionArrowMap;
     private float sequenceArrowXOffset;
+    private float gameTimerBarMaxValue;
 
     // Start is called before the first frame update
     void Start() {
@@ -50,23 +53,19 @@ public class UIManager : MonoBehaviour
         inputDirectionArrowMap.Add(InputDirection.Right, arrowRightPrefab);
 
         sequenceArrowXOffset = 90.0f;
+        gameTimerBarMaxValue = gameTimerBarBackground.transform.localScale.x;
 
         playerJoinUIParent.SetActive(false);
         gameUIParent.SetActive(false);
         gameEndUIParent.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
     #region Public Methods
     /// <summary>
-    /// Update the UI based on a new game state
+    /// Change the UI based on a new game state
     /// </summary>
     /// <param name="newGameState">The new game state</param>
-    public void UpdateUI(GameState newGameState) {
+    public void ChangeUI(GameState newGameState) {
         switch(newGameState) {
             case GameState.MainMenu:
                 gameEndUIParent.SetActive(false);
@@ -128,8 +127,10 @@ public class UIManager : MonoBehaviour
     /// <param name="index">The int index of the player joined</param>
     /// <param name="inputComponent">The component of the CPU's input. Possibly null if a player has joined</param>
     public void DisplayJoinedPlayer(int index, ComputerInput inputComponent) {
-        float yDiff = -100.0f;
-        Vector2 position = new Vector2(0.0f, index * yDiff);
+        Transform parent = player1JoinParent.transform;
+        if(index == 1) {
+            parent = player2JoinParent.transform;
+        }
 
         if(inputComponent != null) {
             // If inputComponent exists, a CPU has been added to the game
@@ -137,8 +138,8 @@ public class UIManager : MonoBehaviour
                 cPUPlayerListPrefab,
                 Vector2.zero,
                 Quaternion.identity,
-                playerListParent.transform);
-            cPUPlayerListItem.transform.localPosition = position;
+                parent.transform);
+            cPUPlayerListItem.transform.localPosition = Vector2.zero;
             cPUPlayerListItem.GetComponent<CPUPlayerUI>().SetupValues(
                 GameManager.instance.PlayerNames[index],
                 inputComponent);
@@ -148,8 +149,8 @@ public class UIManager : MonoBehaviour
                 playerListPrefab,
                 Vector2.zero,
                 Quaternion.identity,
-                playerListParent.transform);
-            playerTextObject.transform.localPosition = position;
+                parent.transform);
+            playerTextObject.transform.localPosition = Vector2.zero;
             playerTextObject.GetComponent<TMP_Text>().text = GameManager.instance.PlayerNames[index];
         }
 
@@ -174,6 +175,14 @@ public class UIManager : MonoBehaviour
     public void ResetIndicator(int playerIndex) {
         playerSequenceParent.transform.GetChild(playerIndex).GetChild(0).localPosition = new Vector2(0.0f, 0.0f);
     }
+
+    public void UpdateGameTimerBar(float timeLeftPercentage) {
+        Vector3 currentScale = gameTimerBarValueObject.transform.localScale;
+        float max = gameTimerBarMaxValue;
+        float gameTimerBarValue = gameTimerBarMaxValue * timeLeftPercentage;
+        currentScale.x = gameTimerBarValue;
+        gameTimerBarValueObject.transform.localScale = currentScale;
+    }
     #endregion Public Methods
 
     /// <summary>
@@ -191,7 +200,7 @@ public class UIManager : MonoBehaviour
         for(int i = 0; i < GameManager.instance.GetPlayerCount(); i++) {
             string playerName = GameManager.instance.PlayerNames[i];
             int playerTotal = GameManager.instance.PlayerTotals[i];
-            string row = string.Format("{0}: {1}\n", playerName, playerTotal);
+            string row = string.Format("{0}: {1}\n\n", playerName, playerTotal);
             gameEndPlayerStats.text += row;
         }
     }

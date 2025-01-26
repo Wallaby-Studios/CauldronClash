@@ -72,6 +72,7 @@ public class GameManager : MonoBehaviour
     void FixedUpdate() {
         if(currentGameState == GameState.Game) {
             gameTimerCurrent -= Time.deltaTime;
+            UIManager.instance.UpdateGameTimerBar(gameTimerCurrent / gameTimerMax);
             if(gameTimerCurrent <= 0.0f) {
                 if(playerTotals[0] > playerTotals[1]) {
                     GameWon(0);
@@ -107,7 +108,7 @@ public class GameManager : MonoBehaviour
         }
 
         currentGameState = newGameState;
-        UIManager.instance.UpdateUI(newGameState);
+        UIManager.instance.ChangeUI(newGameState);
     }
 
     /// <summary>
@@ -263,7 +264,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void SetupGame() {
         // Set the game timer
-        gameTimerCurrent = gameTimerMax;
+        ResetGameTimer();
 
         // Create a "progress" index and total counter for each player
         currentPlayerIndecies = new List<int>();
@@ -296,6 +297,11 @@ public class GameManager : MonoBehaviour
     private InputDirection GetNextKeyForPlayer(int playerNum) {
         int index = currentPlayerIndecies[playerNum];
         return sequences[playerTotals[playerNum]][index];
+    }
+
+    private void ResetGameTimer() {
+        gameTimerCurrent = gameTimerMax;
+        UIManager.instance.UpdateGameTimerBar(1.0f);
     }
 
     /// <summary>

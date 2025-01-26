@@ -8,7 +8,7 @@ public enum ComputerDifficulty
     Easy,
     Medium,
     Hard,
-    Cheating
+    Impossible
 }
 
 public class ComputerInput : EntityInput
@@ -55,7 +55,7 @@ public class ComputerInput : EntityInput
                 inputRate = 0.5f;
                 wrongInputChance = 0.0f;
                 break;
-            case ComputerDifficulty.Cheating:
+            case ComputerDifficulty.Impossible:
                 inputRate = 0.25f;
                 wrongInputChance = 0.0f;
                 break;
