@@ -128,7 +128,7 @@ public class UIManager : MonoBehaviour
                 parent.transform);
             cPUPlayerListItem.transform.localPosition = Vector2.zero;
             cPUPlayerListItem.GetComponent<CPUPlayerUI>().SetupValues(
-                GameManager.instance.PlayerNames[index],
+                PlayerManager.instance.PlayerNames[index],
                 inputComponent);
         } else {
             // If inputComponent is null, a non-CPU player has joined
@@ -138,7 +138,7 @@ public class UIManager : MonoBehaviour
                 Quaternion.identity,
                 parent.transform);
             playerTextObject.transform.localPosition = Vector2.zero;
-            playerTextObject.GetComponent<TMP_Text>().text = GameManager.instance.PlayerNames[index];
+            playerTextObject.GetComponent<TMP_Text>().text = PlayerManager.instance.PlayerNames[index];
         }
 
         UpdatePlayerJoinToGameButton();
@@ -148,7 +148,7 @@ public class UIManager : MonoBehaviour
     /// Updates the PlayerJoinToGame Button based on if there are enough players joined
     /// </summary>
     public void UpdatePlayerJoinToGameButton() {
-        playerJoinToGameButton.interactable = GameManager.instance.GetPlayerCount() >= GameManager.instance.MinPlayerCount;
+        playerJoinToGameButton.interactable = PlayerManager.instance.GetPlayerCount() >= PlayerManager.instance.MinPlayerCount;
     }
 
     /// <summary>
@@ -198,14 +198,14 @@ public class UIManager : MonoBehaviour
         mainMenuToPlayerJoinButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.PlayerJoin));
         quitButton.onClick.AddListener(() => Application.Quit());
         playerJoinToGameButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.Game));
-        addCPUButton.onClick.AddListener(GameManager.instance.AddCPUInput);
+        addCPUButton.onClick.AddListener(PlayerManager.instance.AddCPUInput);
         gameEndToMainMenuButton.onClick.AddListener(() => GameManager.instance.ChangeGameState(GameState.MainMenu));
     }
 
     private void DisplayPlayerStats() {
         gameEndPlayerStats.text = "";
-        for(int i = 0; i < GameManager.instance.GetPlayerCount(); i++) {
-            string playerName = GameManager.instance.PlayerNames[i];
+        for(int i = 0; i < PlayerManager.instance.GetPlayerCount(); i++) {
+            string playerName = PlayerManager.instance.PlayerNames[i];
             int playerTotal = GameManager.instance.PlayerTotals[i];
             string row = string.Format("{0}: {1}\n\n", playerName, playerTotal);
             gameEndPlayerStats.text += row;

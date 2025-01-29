@@ -28,21 +28,14 @@ public class GameManager : MonoBehaviour
         // than this is not needed, thus destroy it
         else if(instance != this)
             Destroy(gameObject);
-
-        playerInputManager = GetComponent<PlayerInputManager>();
-        // Set up Player Input Manager player joined event trigger
-        playerInputManager.onPlayerJoined += PlayerInput_onPlayerJoined;
     }
     #endregion
 
     #region Fields
     private GameState currentGameState;
-    private PlayerInputManager playerInputManager;
 
     [SerializeField]
-    private GameObject playersParent, computerPrefab;
-    [SerializeField]
-    private int minPlayerCount, sequenceLength;
+    private int sequenceLength;
     [SerializeField]
     private List<List<InputDirection>> sequences;
     [SerializeField]
@@ -51,23 +44,19 @@ public class GameManager : MonoBehaviour
     private float gameTimerMax;
     [SerializeField]
     private List<IngredientSpawner> ingredientSpawners;
-    private List<string> playerNames;
     private float gameTimerCurrent;
     #endregion Fields
 
     #region Properties
     public GameState CurrentGameState { get { return currentGameState; } }
-    public int MinPlayerCount { get { return minPlayerCount; } }
     public List<List<InputDirection>> Sequences { get { return sequences; } }
     public List<int> PlayerTotals { get { return playerTotals; } }
-    public List<string> PlayerNames { get { return playerNames; } }
     public float GameTimerCurrent { get { return gameTimerCurrent; } }
     #endregion Properties
 
     // Start is called before the first frame update
     void Start() {
         ChangeGameState(GameState.MainMenu);
-        playerNames = new List<string>();
     }
 
     void FixedUpdate() {
@@ -77,19 +66,7 @@ public class GameManager : MonoBehaviour
             if(gameTimerCurrent <= 0.0f) {
                 GameOver();
             }
-        }
-
-        if (currentGameState == GameState.PlayerJoin)
-        {
-            if (playersParent.transform.childCount >= 2)
-            {
-                playerInputManager.DisableJoining();
-            }
-            else
-            {
-                playerInputManager.EnableJoining();
-            }
-        }
+        }   
     }
 
     #region Public Methods
@@ -100,16 +77,17 @@ public class GameManager : MonoBehaviour
     public void ChangeGameState(GameState newGameState) {
         switch(newGameState) {
             case GameState.MainMenu:
-                // Joining is disabled initally on the PIM so this is redundant but just in case 
-                playerInputManager.DisableJoining();
+                // Joining is disabled initally on the PIM (see in the inspector)
+                // so this is technically redundant 
+                PlayerManager.instance.UpdatePlayerJoining(false);
                 sequences = new List<List<InputDirection>>();
                 break;
             case GameState.PlayerJoin:
                 // Only allow joining during this screen
-                playerInputManager.EnableJoining();
+                PlayerManager.instance.UpdatePlayerJoining(true);
                 break;
             case GameState.Game:
-                playerInputManager.DisableJoining();
+                PlayerManager.instance.UpdatePlayerJoining(false);
                 SetupGame();
                 break;
             case GameState.GameEnd:
@@ -118,23 +96,6 @@ public class GameManager : MonoBehaviour
 
         currentGameState = newGameState;
         UIManager.instance.ChangeUI(newGameState);
-    }
-
-    /// <summary>
-    /// Get a player by its index from the players parents
-    /// </summary>
-    /// <param name="index">The int index of the player</param>
-    /// <returns>A GameObject of the player</returns>
-    public GameObject GetPlayerByIndex(int index) {
-        return playersParent.transform.GetChild(index).gameObject;
-    }
-
-    /// <summary>
-    /// Get a count of all players, including CPUs
-    /// </summary>
-    /// <returns>An int of the number of players</returns>
-    public int GetPlayerCount() {
-        return playersParent.transform.childCount;
     }
 
     /// <summary>
@@ -178,31 +139,10 @@ public class GameManager : MonoBehaviour
                 UIManager.instance.AdvanceSequenceIndicator(playerIndex, currentPlayerIndecies[playerIndex]);
             }
         } else {
-            // If the input is incorrect, disable the player from inputting further
-            PlayerInputControls playerInputControls = playersParent.transform.GetChild(playerIndex).GetComponent<PlayerInputControls>();
-            if(playerInputControls != null) {
-                ingredientSpawners[playerIndex].SpawnBadItem();
-                ingredientSpawners[playerIndex].BubbleOver();
-                ResetProgress(playerIndex, true);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Add a CPU to the game
-    /// </summary>
-    public void AddCPUInput() {
-        int childCount = playersParent.transform.childCount;
-        Debug.Log(childCount);
-        Debug.Log(GetComponent<PlayerInputManager>().maxPlayerCount);
-        if(childCount < GetComponent<PlayerInputManager>().maxPlayerCount) {
-            // Create a CPU gameObject as a child of the players gameObject, name it "CPU#", and set its player index
-            GameObject computer = Instantiate(computerPrefab, playersParent.transform);
-            computer.name = string.Format("{0} (CPU)", GeneratePlayerName());
-            computer.GetComponent<ComputerInput>().Index = childCount;
-            playerNames.Add(computer.name);
-            // Update UI
-            UIManager.instance.DisplayJoinedPlayer(childCount, computer.GetComponent<ComputerInput>());
+            // If the input is incorrect, reset the player's progress
+            ingredientSpawners[playerIndex].SpawnBadItem();
+            ingredientSpawners[playerIndex].BubbleOver();
+            ResetProgress(playerIndex, true);
         }
     }
 
@@ -213,65 +153,6 @@ public class GameManager : MonoBehaviour
     #endregion Public Methods
 
     #region Private Methods
-    /// <summary>
-    /// A method called when a player joins via the PlayerInputManager
-    /// </summary>
-    /// <param name="playerInput">The PlayerInput script of the new player</param>
-    private void PlayerInput_onPlayerJoined(PlayerInput playerInput) {
-        // Set the player's name and index
-        playerInput.gameObject.name = GeneratePlayerName();
-        playerInput.GetComponent<PlayerInputControls>().Index = GetPlayerCount();
-        // Move the player GameObject as a child of the players parent GameObject
-        playerInput.gameObject.transform.SetParent(playersParent.transform);
-        playerNames.Add(playerInput.gameObject.name);
-        // Update UI
-        UIManager.instance.DisplayJoinedPlayer(playersParent.transform.childCount - 1, null);
-    }
-
-    private string GeneratePlayerName() {
-        List<string> firstName = new List<string>() {
-            "Stinky",
-            "Moldy",
-            "Sweaty",
-            "Smart",
-            "Stupid",
-            "Dumb",
-            "Focused",
-            "Distracted",
-            "Rowdy",
-            "Musty",
-            "Wise",
-            "Funny",
-            "Nice",
-            "Kind",
-            "Jovial",
-            "Intelligent",
-            "Grumpy",
-            "Sleepy"
-        };
-        List<string> secondName = new List<string>() {
-            "Newt",
-            "Salamander",
-            "Iguana",
-            "Gecko",
-            "Dragon",
-            "Beaver",
-            "Otter",
-            "Shrew",
-            "Raccoon",
-            "Possum",
-            "Mouse",
-            "Rat",
-            "Squirrel",
-            "Chipmunk",
-            "Hyrax"
-        };
-
-        return string.Format(
-            "{0} {1}",
-            firstName[UnityEngine.Random.Range(0, firstName.Count)],
-            secondName[UnityEngine.Random.Range(0, secondName.Count)]);
-    }
 
     /// <summary>
     /// Set up initial values needed for each round
@@ -286,7 +167,7 @@ public class GameManager : MonoBehaviour
         // Generate an initial input sequence and display it to both players
         sequences.Add(GenerateSequence());
 
-        for(int i = 0; i < playersParent.transform.childCount; i++) {
+        for(int i = 0; i < PlayerManager.instance.GetPlayerCount(); i++) {
             currentPlayerIndecies.Add(0);
             playerTotals.Add(0);
             UIManager.instance.DisplaySequence(i);
@@ -324,9 +205,9 @@ public class GameManager : MonoBehaviour
     private void GameOver() {
         string gameEndTitleText = "Tie Game";
         if(playerTotals[0] > playerTotals[1]) {
-            gameEndTitleText = string.Format("{0} Wins", playerNames[0]);
+            gameEndTitleText = string.Format("{0} Wins", PlayerManager.instance.PlayerNames[0]);
         } else if(playerTotals[0] < playerTotals[1]) {
-            gameEndTitleText = string.Format("{0} Wins", playerNames[1]);
+            gameEndTitleText = string.Format("{0} Wins", PlayerManager.instance.PlayerNames[1]);
         }
 
         UIManager.instance.UpdateGameEndText(gameEndTitleText);

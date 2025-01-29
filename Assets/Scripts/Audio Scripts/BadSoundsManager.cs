@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class BadSoundsManager : MonoBehaviour
 {
-    AudioSource audio;
+    AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
-        audio = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -19,6 +19,6 @@ public class BadSoundsManager : MonoBehaviour
 
     public void PlayBadSound()
     {
-        audio.Play();        
+        audioSource.Play();        
     }
 }

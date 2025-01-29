@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class ItemSoundsManager : MonoBehaviour
 {
-    AudioSource audio;
+    AudioSource audioSource;
     public List<AudioClip> clips = new List<AudioClip>();
     // Start is called before the first frame update
     void Start()
     {
-        audio = GetComponent<AudioSource>();
-        audio.clip = clips[Random.Range(0, clips.Count - 1)];
+        audioSource = GetComponent<AudioSource>();
+        audioSource.clip = clips[Random.Range(0, clips.Count - 1)];
 
     }
 
@@ -22,8 +22,8 @@ public class ItemSoundsManager : MonoBehaviour
 
     public void playSplash()
     {
-        audio.clip = clips[Random.Range(0, clips.Count - 1)];
-        audio.pitch = Random.Range(1, 1.5f);
-        audio.Play();
+        audioSource.clip = clips[Random.Range(0, clips.Count - 1)];
+        audioSource.pitch = Random.Range(1, 1.5f);
+        audioSource.Play();
     }
 }

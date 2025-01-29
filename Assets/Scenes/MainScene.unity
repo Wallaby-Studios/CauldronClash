@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 3823954}
   - component: {fileID: 3823955}
   - component: {fileID: 3823956}
+  - component: {fileID: 3823958}
   - component: {fileID: 3823957}
   m_Layer: 0
   m_Name: GameManager
@@ -169,9 +170,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca5e4e5cfa62b4c48a18ba67779dae2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playersParent: {fileID: 1969627713}
-  computerPrefab: {fileID: 4750312703209104619, guid: 09ce8b2378a80e94ba4cfaffdb254436, type: 3}
-  minPlayerCount: 2
   sequenceLength: 8
   currentPlayerIndecies: 
   playerTotals: 
@@ -263,6 +261,21 @@ MonoBehaviour:
   arrowRightPrefab: {fileID: 9027227011357948663, guid: 0861233f17b605445919118fe497f848, type: 3}
   gameTimerBarBackground: {fileID: 580754745}
   gameTimerBarValueObject: {fileID: 1970438979}
+--- !u!114 &3823958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3823953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047fd614f8d2b604bbec9c70120f34f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playersParent: {fileID: 1969627713}
+  computerPrefab: {fileID: 4750312703209104619, guid: 09ce8b2378a80e94ba4cfaffdb254436, type: 3}
+  minPlayerCount: 2
 --- !u!1 &18980327
 GameObject:
   m_ObjectHideFlags: 0
@@ -3611,7 +3624,7 @@ GameObject:
   - component: {fileID: 1473827694}
   - component: {fileID: 1473827693}
   m_Layer: 5
-  m_Name: BG CANVAS
+  m_Name: Background Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
