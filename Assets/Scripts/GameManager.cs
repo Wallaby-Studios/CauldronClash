@@ -172,9 +172,9 @@ public class GameManager : MonoBehaviour
                     sequences.Add(GenerateSequence());
                 }
                 // ===========
-                // Play sound for completing a potion
+                // TODO: Play sound for completing a potion
                 // ===========
-                ResetProgress(playerIndex);
+                ResetProgress(playerIndex, false);
                 UIManager.instance.DisplaySequence(playerIndex);
             } else {
                 // ===========
@@ -195,7 +195,7 @@ public class GameManager : MonoBehaviour
             // If the input is incorrect, disable the player from inputting further
             PlayerInputControls playerInputControls = playersParent.transform.GetChild(playerIndex).GetComponent<PlayerInputControls>();
             if(playerInputControls != null) {
-                ResetProgress(playerIndex);
+                ResetProgress(playerIndex, true);
                 // ===========
                 // Call method to spawn a bad ingrient 
                 // ===========
@@ -231,9 +231,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void ResetProgress(int playerIndex) {
+    public void ResetProgress(int playerIndex, bool receivedWrongInput) {
         currentPlayerIndecies[playerIndex] = 0;
-        UIManager.instance.ResetIndicator(playerIndex);
+        UIManager.instance.ResetIndicator(playerIndex, receivedWrongInput);
     }
     #endregion Public Methods
 

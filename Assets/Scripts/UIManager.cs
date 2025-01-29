@@ -82,7 +82,7 @@ public class UIManager : MonoBehaviour
                 playerJoinUIParent.SetActive(false);
                 gameUIParent.SetActive(true);
                 for(int i = 0; i < playerSequenceIndicatorTransforms.Count; i++) {
-                    ResetIndicator(i);
+                    ResetIndicator(i, false);
                 }
                 break;
             case GameState.GameEnd:
@@ -171,11 +171,15 @@ public class UIManager : MonoBehaviour
         playerSequenceIndicatorTransforms[playerIndex].position = positionOfNextSequenceIcon;
     }
 
-    public void ResetIndicator(int playerIndex) {
+    public void ResetIndicator(int playerIndex, bool receivedWrongInput) {
         // Get the position of the first arrow icon
         Vector2 positionOfFirstSequenceIcon = playerSequenceArrowParentTransforms[playerIndex].GetChild(0).position;
         // Set the position of the indicator
         playerSequenceIndicatorTransforms[playerIndex].position = positionOfFirstSequenceIcon;
+
+        if(receivedWrongInput) {
+            playerSequenceIndicatorTransforms[playerIndex].GetComponent<SequenceIndicator>().FlashIndicatorImage();
+        }
     }
 
     public void UpdateGameTimerBar(float timeLeftPercentage) {
