@@ -77,17 +77,11 @@ public class GameManager : MonoBehaviour
     public void ChangeGameState(GameState newGameState) {
         switch(newGameState) {
             case GameState.MainMenu:
-                // Joining is disabled initally on the PIM (see in the inspector)
-                // so this is technically redundant 
-                PlayerManager.instance.UpdatePlayerJoining(false);
                 sequences = new List<List<InputDirection>>();
                 break;
             case GameState.PlayerJoin:
-                // Only allow joining during this screen
-                PlayerManager.instance.UpdatePlayerJoining(true);
                 break;
             case GameState.Game:
-                PlayerManager.instance.UpdatePlayerJoining(false);
                 SetupGame();
                 break;
             case GameState.GameEnd:
@@ -95,6 +89,7 @@ public class GameManager : MonoBehaviour
         }
 
         currentGameState = newGameState;
+        PlayerManager.instance.ChangeJoiningState(currentGameState);
         UIManager.instance.ChangeUI(newGameState);
     }
 

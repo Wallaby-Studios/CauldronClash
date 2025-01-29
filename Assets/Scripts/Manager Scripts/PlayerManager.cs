@@ -42,14 +42,22 @@ public class PlayerManager : MonoBehaviour
         playerNames = new List<string>();
     }
 
-    // Update is called once per frame
-    void Update() {
-        if(GameManager.instance.CurrentGameState == GameState.PlayerJoin) {
-            if(playersParent.transform.childCount >= 2) {
-                playerInputManager.DisableJoining();
-            } else {
+    public void ChangeJoiningState(GameState currentGameState) {
+        switch(currentGameState) {
+            case GameState.PlayerJoin:
                 playerInputManager.EnableJoining();
-            }
+                break;
+            default:
+                playerInputManager.DisableJoining();
+                break;
+        }
+    }
+
+    public void UpdatePlayerJoining(bool canPlayersJoin) {
+        if(canPlayersJoin) {
+            playerInputManager.EnableJoining();
+        } else {
+            playerInputManager.DisableJoining();
         }
     }
 
@@ -81,16 +89,12 @@ public class PlayerManager : MonoBehaviour
             computer.name = string.Format("{0} (CPU)", GeneratePlayerName());
             computer.GetComponent<ComputerInput>().Index = childCount;
             playerNames.Add(computer.name);
+            // Restrict other players joining if max player count is reached
+            if(GetPlayerCount() >= playerInputManager.maxPlayerCount) {
+                playerInputManager.DisableJoining();
+            }
             // Update UI
             UIManager.instance.DisplayJoinedPlayer(childCount, computer.GetComponent<ComputerInput>());
-        }
-    }
-
-    public void UpdatePlayerJoining(bool canPlayersJoin) {
-        if(canPlayersJoin) {
-            playerInputManager.EnableJoining();
-        } else {
-            playerInputManager.DisableJoining();
         }
     }
 
@@ -105,6 +109,10 @@ public class PlayerManager : MonoBehaviour
         // Move the player GameObject as a child of the players parent GameObject
         playerInput.gameObject.transform.SetParent(playersParent.transform);
         playerNames.Add(playerInput.gameObject.name);
+        // Restrict other players joining if max player count is reached
+        if(GetPlayerCount() >= playerInputManager.maxPlayerCount) {
+            playerInputManager.DisableJoining();
+        }
         // Update UI
         UIManager.instance.DisplayJoinedPlayer(playersParent.transform.childCount - 1, null);
     }
