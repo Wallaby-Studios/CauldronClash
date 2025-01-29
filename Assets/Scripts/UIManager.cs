@@ -29,8 +29,8 @@ public class UIManager : MonoBehaviour
     private Button mainMenuToPlayerJoinButton, quitButton, playerJoinToGameButton, addCPUButton, gameEndToMainMenuButton;
     [SerializeField]    // Text
     private TMP_Text gameEndTitle, gameEndPlayerStats;
-    [SerializeField]    // GameObject Parents
-    private GameObject player1JoinParent, player2JoinParent, playerSequenceParent;
+    [SerializeField]    // List of Parent Transforms
+    private List<Transform> playerJoinParentTransforms, playerSequenceIndicatorTransforms, playerSequenceArrowParentTransforms;
     [SerializeField]    // Prefabs
     private GameObject playerListPrefab, cPUPlayerListPrefab;
     [SerializeField]    // Arrow Sprites
@@ -81,7 +81,7 @@ public class UIManager : MonoBehaviour
             case GameState.Game:
                 playerJoinUIParent.SetActive(false);
                 gameUIParent.SetActive(true);
-                for(int i = 0; i < playerSequenceParent.transform.childCount; i++) {
+                for(int i = 0; i < playerSequenceIndicatorTransforms.Count; i++) {
                     ResetIndicator(i);
                 }
                 break;
@@ -96,9 +96,8 @@ public class UIManager : MonoBehaviour
 
     public void DisplaySequence(int playerIndex) {
         List<InputDirection> sequence = GameManager.instance.Sequences[GameManager.instance.PlayerTotals[playerIndex]];
-        //Debug.Log(playerSequenceParent.transform.GetChild(playerIndex).GetChild(1).gameObject.name);
-        Debug.Log(playerIndex);
-        Transform parentTransform = playerSequenceParent.transform.GetChild(playerIndex).GetChild(1);
+
+        Transform parentTransform = playerSequenceArrowParentTransforms[playerIndex];
         // Reset all children 
         for(int j = parentTransform.transform.childCount - 1; j >= 0; j--) {
             Destroy(parentTransform.GetChild(j).gameObject);
@@ -118,10 +117,7 @@ public class UIManager : MonoBehaviour
     /// <param name="index">The int index of the player joined</param>
     /// <param name="inputComponent">The component of the CPU's input. Possibly null if a player has joined</param>
     public void DisplayJoinedPlayer(int index, ComputerInput inputComponent) {
-        Transform parent = player1JoinParent.transform;
-        if(index == 1) {
-            parent = player2JoinParent.transform;
-        }
+        Transform parent = playerJoinParentTransforms[index];
 
         if(inputComponent != null) {
             // If inputComponent exists, a CPU has been added to the game
@@ -169,13 +165,17 @@ public class UIManager : MonoBehaviour
     /// <param name="playerIndex">The int index of the player</param>
     /// <param name="progressIndex">The int of the sequence icon the player is now on</param>
     public void AdvanceSequenceIndicator(int playerIndex, int progressIndex) {
-        Vector2 positionOfNextSequenceIcon = playerSequenceParent.transform.GetChild(playerIndex).GetChild(1).GetChild(progressIndex).position;
-        playerSequenceParent.transform.GetChild(playerIndex).GetChild(0).position = positionOfNextSequenceIcon;
+        // Get the position of the next arrow icon
+        Vector2 positionOfNextSequenceIcon = playerSequenceArrowParentTransforms[playerIndex].GetChild(progressIndex).position;
+        // Set the position of the indicator
+        playerSequenceIndicatorTransforms[playerIndex].position = positionOfNextSequenceIcon;
     }
 
     public void ResetIndicator(int playerIndex) {
-        Vector2 positionOfFirstSequenceIcon = playerSequenceParent.transform.GetChild(playerIndex).GetChild(1).GetChild(0).position;
-        playerSequenceParent.transform.GetChild(playerIndex).GetChild(0).position = positionOfFirstSequenceIcon;
+        // Get the position of the first arrow icon
+        Vector2 positionOfFirstSequenceIcon = playerSequenceArrowParentTransforms[playerIndex].GetChild(0).position;
+        // Set the position of the indicator
+        playerSequenceIndicatorTransforms[playerIndex].position = positionOfFirstSequenceIcon;
     }
 
     public void UpdateGameTimerBar(float timeLeftPercentage) {
