@@ -49,8 +49,8 @@ public class GameManager : MonoBehaviour
     private List<int> currentPlayerIndecies, playerTotals;
     [SerializeField]
     private float gameTimerMax;
-    public IngredientSpawner p0Spawner;
-    public IngredientSpawner p1Spawner;
+    [SerializeField]
+    private List<IngredientSpawner> ingredientSpawners;
     private List<string> playerNames;
     private float gameTimerCurrent;
     #endregion Fields
@@ -68,9 +68,6 @@ public class GameManager : MonoBehaviour
     void Start() {
         ChangeGameState(GameState.MainMenu);
         playerNames = new List<string>();
-        //p0Spawner = FindObjectsOfType<IngredientSpawner>()[0];
-        //p1Spawner = FindObjectsOfType<IngredientSpawner>()[1];
-
     }
 
     void FixedUpdate() {
@@ -93,7 +90,6 @@ public class GameManager : MonoBehaviour
                 playerInputManager.EnableJoining();
             }
         }
-        
     }
 
     #region Public Methods
@@ -177,38 +173,17 @@ public class GameManager : MonoBehaviour
                 ResetProgress(playerIndex, false);
                 UIManager.instance.DisplaySequence(playerIndex);
             } else {
-                // ===========
-                // Call method to spawn a good ingrient 
-                // ===========
-                if (playerIndex == 0)
-                {
-                    p0Spawner.SpawnGoodItem();
-                }
-                else
-                {
-                    p1Spawner.SpawnGoodItem();
-                }
-                // Otherwise, update its indicator
+                // Otherwise, spawn a good item and update its indicator
+                ingredientSpawners[playerIndex].SpawnGoodItem();
                 UIManager.instance.AdvanceSequenceIndicator(playerIndex, currentPlayerIndecies[playerIndex]);
             }
         } else {
             // If the input is incorrect, disable the player from inputting further
             PlayerInputControls playerInputControls = playersParent.transform.GetChild(playerIndex).GetComponent<PlayerInputControls>();
             if(playerInputControls != null) {
+                ingredientSpawners[playerIndex].SpawnBadItem();
+                ingredientSpawners[playerIndex].BubbleOver();
                 ResetProgress(playerIndex, true);
-                // ===========
-                // Call method to spawn a bad ingrient 
-                // ===========
-                if (playerIndex == 0)
-                {
-                    p0Spawner.SpawnBadItem();
-                    p0Spawner.BubbleOver();
-                }
-                else
-                {
-                    p1Spawner.SpawnBadItem();
-                    p1Spawner.BubbleOver();
-                }
             }
         }
     }

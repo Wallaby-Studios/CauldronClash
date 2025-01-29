@@ -176,8 +176,9 @@ MonoBehaviour:
   currentPlayerIndecies: 
   playerTotals: 
   gameTimerMax: 30
-  p0Spawner: {fileID: 372432280}
-  p1Spawner: {fileID: 269514690}
+  ingredientSpawners:
+  - {fileID: 372432280}
+  - {fileID: 269514690}
 --- !u!114 &3823956
 MonoBehaviour:
   m_ObjectHideFlags: 0
