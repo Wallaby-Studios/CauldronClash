@@ -8,7 +8,7 @@ public enum ComputerDifficulty
     Easy,
     Medium,
     Hard,
-    Impossible
+    Insane
 }
 
 public class ComputerInput : EntityInput
@@ -55,7 +55,7 @@ public class ComputerInput : EntityInput
                 inputRate = 0.5f;   // 4s per sequence, max of 7
                 wrongInputChance = 0.05f;
                 break;
-            case ComputerDifficulty.Impossible:
+            case ComputerDifficulty.Insane:
                 inputRate = 0.25f;  // 2s per sequence, max of 14 (time runs out before 15th)
                 wrongInputChance = 0.0f;
                 break;
