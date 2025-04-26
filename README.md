@@ -6,9 +6,9 @@ Supported Inputs: Gamepads (face buttons), Keyboard (WASD or ArrowKeys).
 
 Created for Global Game Jam 2025.
 
-Credits
-Programming: Rhys Stever and Connor Baun
-Art: Sam Moor and Josh Mitchell
-Music: Brandon Baun @shallowtowers
-Goblin Voiceover: Josh Mitchell
-Arrow Icons: Kenney Assets
+Credits  
+Programming: Rhys Stever and Connor Baun  
+Art: Sam Moor and Josh Mitchell  
+Music: Brandon Baun @shallowtowers  
+Goblin Voiceover: Josh Mitchell  
+Arrow Icons: Kenney Assets  
